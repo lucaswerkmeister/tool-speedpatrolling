@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block main %}
+<div class="jumbotron">
+  <h1 class="display-4">SpeedPatrolling</h1>
+  <p class="lead">
+    This tool helps Wikidata editors to patrol recent changes.
+  </p>
+  <a class="btn btn-primary btn-large" href="{{ url_for('any_diff') }}">Start</a>
+</div>
+{% endblock %}
