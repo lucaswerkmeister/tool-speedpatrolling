@@ -110,6 +110,8 @@ def unpatrolled_changes():
 
 def user_rights():
     session = authenticated_session()
+    if session is None:
+        return []
     return session.get(action='query',
                        meta='userinfo',
                        uiprop='rights')['query']['userinfo']['rights']
