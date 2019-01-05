@@ -43,6 +43,10 @@ FLASK_APP=app.py FLASK_ENV=development flask run
 
 If you want, you can do this inside some virtualenv too.
 
+Note that your possibilities to work on this tool are rather limited
+unless you request your own OAuth consumer and configure it in a `config.yaml` file –
+without OAuth credentials, the tool cannot even load a list of unpatrolled changes.
+
 ## License
 
 The code in this repository is released under the AGPL v3, as provided in the `LICENSE` file.
