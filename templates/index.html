@@ -5,6 +5,10 @@
   <p class="lead">
     This tool helps Wikidata editors to patrol recent changes.
   </p>
+  {% if user_logged_in() %}
   <a class="btn btn-primary btn-large" href="{{ url_for('any_diff') }}">Start</a>
+  {% else %}
+  <a class="btn btn-primary btn-large" href="{{ url_for('login') }}">Log in</a> to get started
+  {% endif %}
 </div>
 {% endblock %}

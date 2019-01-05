@@ -66,11 +66,15 @@ def user_link(user_name):
             flask.Markup(r'</a>'))
 
 @app.template_global()
+def user_logged_in():
+    return 'oauth_access_token' in flask.session
+
+@app.template_global()
 def authentication_area():
     if 'oauth' not in app.config:
         return flask.Markup()
 
-    if 'oauth_access_token' not in flask.session:
+    if not user_logged_in():
         return (flask.Markup(r'<a id="login" class="navbar-text" href="') +
                 flask.Markup.escape(flask.url_for('login')) +
                 flask.Markup(r'">Log in</a>'))
