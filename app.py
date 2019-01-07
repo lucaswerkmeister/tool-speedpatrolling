@@ -122,8 +122,7 @@ def user_can_patrol():
 
 @app.template_global()
 def user_can_rollback():
-    # return 'rollback' in user_rights()
-    return False # rollback not yet implemented
+    return 'rollback' in user_rights()
 
 
 @app.route('/')
@@ -169,7 +168,26 @@ def diff_patrol(id):
 
 @app.route('/diff/<int:id>/rollback', methods=['POST'])
 def diff_rollback(id):
-    return 'not yet implemented (sorry)', 501
+    if not submitted_request_valid():
+        return 'CSRF error', 400
+    session = authenticated_session()
+    token = session.get(action='query',
+                        meta='tokens',
+                        type='rollback')['query']['tokens']['rollbacktoken']
+    results = session.get(action='query',
+                          revids=[str(id)],
+                          prop='revisions',
+                          rvprop='user',
+                          formatversion='2')
+    for page in results['query']['pages']:
+        pageid = page['pageid']
+        user = page['revisions'][0]['user']
+        break
+    session.post(action='rollback',
+                 pageid=pageid,
+                 user=user,
+                 token=token)
+    return flask.redirect(flask.url_for('any_diff'))
 
 @app.route('/login')
 def login():
