@@ -5,13 +5,13 @@
   <input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
   <div class="row">
     <div class="col-sm">
-      <button class="btn btn-primary" formaction="skip">Skip</button>
+      <button class="btn btn-block btn-primary" formaction="skip">Skip</button>
     </div>
     <div class="col-sm">
-      <button class="btn btn-success" formaction="patrol" {% if not user_can_patrol() %} disabled {% endif %}>Patrol</button>
+      <button class="btn btn-block btn-success" formaction="patrol" {% if not user_can_patrol() %} disabled {% endif %}>Patrol</button>
     </div>
     <div class="col-sm">
-      <button class="btn btn-danger" formaction="rollback" {% if not user_can_rollback() %} disabled {% endif %}>Rollback</button>
+      <button class="btn btn-block btn-danger" formaction="rollback" {% if not user_can_rollback() %} disabled {% endif %}>Rollback</button>
     </div>
   </div>
 </form>
