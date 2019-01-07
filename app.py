@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import decorator
 import flask
 import mwapi
 import mwoauth
@@ -29,6 +30,16 @@ except FileNotFoundError:
 
 if 'oauth' in app.config:
     consumer_token = mwoauth.ConsumerToken(app.config['oauth']['consumer_key'], app.config['oauth']['consumer_secret'])
+
+
+@decorator.decorator
+def memoize(func, *args, **kwargs):
+    if args or kwargs:
+        raise TypeError('only memoize functions with no arguments')
+    key = '_memoize_' + func.__name__
+    if key not in flask.g:
+        setattr(flask.g, key, func())
+    return getattr(flask.g, key)
 
 
 @app.template_global()
@@ -88,6 +99,7 @@ def authentication_area():
             user_link(identity['username']) +
             flask.Markup(r'</span>'))
 
+@memoize
 def authenticated_session():
     if 'oauth_access_token' in flask.session:
         access_token = mwoauth.AccessToken(**flask.session['oauth_access_token'])
@@ -108,6 +120,7 @@ def unpatrolled_changes():
         for change in result['query']['recentchanges']:
             yield change['revid']
 
+@memoize
 def user_rights():
     session = authenticated_session()
     if session is None:
