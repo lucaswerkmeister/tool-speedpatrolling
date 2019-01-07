@@ -171,18 +171,17 @@ def diff_rollback(id):
     if not submitted_request_valid():
         return 'CSRF error', 400
     session = authenticated_session()
-    token = session.get(action='query',
-                        meta='tokens',
-                        type='rollback')['query']['tokens']['rollbacktoken']
     results = session.get(action='query',
+                          meta='tokens',
+                          type='rollback',
                           revids=[str(id)],
                           prop='revisions',
                           rvprop='user',
                           formatversion='2')
-    for page in results['query']['pages']:
-        pageid = page['pageid']
-        user = page['revisions'][0]['user']
-        break
+    token = results['query']['tokens']['rollbacktoken']
+    page = results['query']['pages'][0]
+    pageid = page['pageid']
+    user = page['revisions'][0]['user']
     session.post(action='rollback',
                  pageid=pageid,
                  user=user,
