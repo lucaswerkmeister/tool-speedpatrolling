@@ -2,6 +2,7 @@
 {% block head %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='accesskey.css') }}">
+<script src="{{ url_for('static', filename='accesskey.js') }}" async="true"></script>
 {% endblock %}
 {% block main %}
 <iframe style="width: 100%; height: 70vh;" src="https://m.wikidata.org/wiki/Special:MobileDiff/{{ id }}"></iframe>
