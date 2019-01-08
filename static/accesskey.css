@@ -1,0 +1,3 @@
+button[accesskey]::first-letter {
+    text-decoration: underline;
+}
