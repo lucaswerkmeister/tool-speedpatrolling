@@ -154,8 +154,20 @@ def any_diff():
 
 @app.route('/diff/<int:id>/')
 def diff(id):
+    session = authenticated_session()
+    results = session.get(action='compare',
+                          fromrev=id,
+                          torelative='prev',
+                          prop=['title', 'user', 'parsedcomment', 'diff'],
+                          formatversion=2)['compare']
     return flask.render_template('diff.html',
-                                 id=id)
+                                 id=id,
+                                 title=results['totitle'],
+                                 old_user=results['fromuser'],
+                                 new_user=results['touser'],
+                                 old_comment=flask.Markup(results['fromparsedcomment']),
+                                 new_comment=flask.Markup(results['toparsedcomment']),
+                                 body=flask.Markup(results['body']))
 
 @app.route('/diff/<int:id>/skip', methods=['POST'])
 def diff_skip(id):
