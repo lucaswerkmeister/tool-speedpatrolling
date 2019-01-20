@@ -146,8 +146,12 @@ def index():
 def any_diff():
     if not user_logged_in():
         return flask.redirect(flask.url_for('login'))
+    skipped_ids = flask.session.get('skipped_ids', [])
+    skipped_ids.sort(reverse=True)
+    print(skipped_ids)
+    del skipped_ids[1000:]
+    flask.session['skipped_ids'] = skipped_ids
     for id in unpatrolled_changes():
-        skipped_ids = flask.session.get('skipped_ids', [])
         if id in skipped_ids:
             continue
         return flask.redirect(flask.url_for('diff', id=id))
