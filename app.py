@@ -115,6 +115,7 @@ def unpatrolled_changes():
                               list='recentchanges',
                               rcprop=['ids'],
                               rcshow='unpatrolled',
+                              rctype=['edit'], # TODO consider including 'new' as well
                               rclimit='max',
                               continuation=True):
         for change in result['query']['recentchanges']:
