@@ -3,6 +3,7 @@
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='accesskey.css') }}">
 <script src="{{ url_for('static', filename='accesskey.js') }}" async="true"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='diff.css') }}">
 <link rel="stylesheet" href="https://www.wikidata.org/w/load.php?modules=mediawiki.legacy.shared|mediawiki.diff.styles&only=styles">
 {% endblock %}
 {% block main %}
@@ -28,7 +29,7 @@
     {{ body }}
   </tbody>
 </table>
-<iframe style="width: 100%; height: 60vh;" src="https://www.wikidata.org/wiki/Special:PermanentLink/{{ id }}?useskin=minerva&useformat=desktop"></iframe>
+<iframe src="https://www.wikidata.org/wiki/Special:PermanentLink/{{ id }}?useskin=minerva&useformat=desktop"></iframe>
 <form method="post">
   <input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
   <div class="row">
