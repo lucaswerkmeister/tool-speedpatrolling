@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import bs4
 import decorator
 import flask
 import mwapi
@@ -170,9 +171,9 @@ def diff(id):
                                  title=results['totitle'],
                                  old_user=results['fromuser'],
                                  new_user=results['touser'],
-                                 old_comment=flask.Markup(results['fromparsedcomment']),
-                                 new_comment=flask.Markup(results['toparsedcomment']),
-                                 body=flask.Markup(results['body']))
+                                 old_comment=fixMarkup(results['fromparsedcomment']),
+                                 new_comment=fixMarkup(results['toparsedcomment']),
+                                 body=fixMarkup(results['body']))
 
 @app.route('/diff/<int:id>/skip', methods=['POST'])
 def diff_skip(id):
@@ -231,6 +232,14 @@ def oauth_callback():
     flask.session['oauth_access_token'] = dict(zip(access_token._fields, access_token))
     return flask.redirect(flask.url_for('index'))
 
+
+def fixMarkup(html):
+    soup = bs4.BeautifulSoup(html, 'html.parser')
+    for link in soup.select('a[href]'):
+        href = link['href']
+        if href.startswith('/') and not href.startswith('//'):
+            link['href'] = 'https://www.wikidata.org' + href
+    return flask.Markup(str(soup))
 
 def full_url(endpoint, **kwargs):
     scheme=flask.request.headers.get('X-Forwarded-Proto', 'http')
