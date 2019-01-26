@@ -1,32 +1,9 @@
-/*
- * We use two nested flex layouts:
- * the outer one contains just the navbar and the main content,
- * to ensure that the main content is the only thing that grows to take up screen space,
- * and the inner one contains the diff, iframe, and buttons,
- * and instructs the iframe to grow to take up screen space
- * (or to shrink as less space is available: diff and buttons are more important).
- * Effectively, this means there’s no scrolling on the page except inside the iframe,
- * and the buttons are always at the bottom of the page.
- */
-
-html,
-body {
-    height: 100%
-}
-
-body {
-    display: flex;
-    flex-direction: column;
-}
-
-main {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
 iframe {
     width: 100%;
-    flex-grow: 1;
+    height: 80vh;
+}
+
+form {
+    position: sticky;
+    bottom: 0px;
 }
