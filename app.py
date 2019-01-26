@@ -95,7 +95,7 @@ def authentication_area():
                                 consumer_token,
                                 access_token)
 
-    return (flask.Markup(r'<span class="navbar-text">Logged in as ') +
+    return (flask.Markup(r'<span class="navbar-text"><span class="d-none d-sm-inline">Logged in as </span>') +
             user_link(identity['username']) +
             flask.Markup(r'</span>'))
 
