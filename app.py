@@ -154,9 +154,19 @@ def any_diff():
     skipped_ids.sort(reverse=True)
     del skipped_ids[1000:]
     flask.session['skipped_ids'] = skipped_ids
+    supported_scripts = flask.session.get('supported_scripts')
     for id in unpatrolled_changes():
         if id in skipped_ids:
             continue
+        if supported_scripts is not None:
+            diff_body = authenticated_session().get(action='compare',
+                                                    fromrev=id,
+                                                    torelative='prev',
+                                                    prop=['diff'],
+                                                    formatversion=2)['compare']['body']
+            script = primary_script_of_diff(diff_body)
+            if script is not None and script not in supported_scripts:
+                continue
         return flask.redirect(flask.url_for('diff', id=id))
 
 @app.route('/diff/<int:id>/')
