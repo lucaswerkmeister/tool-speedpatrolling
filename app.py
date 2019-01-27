@@ -146,6 +146,20 @@ def user_can_rollback():
 def index():
     return flask.render_template('index.html')
 
+@app.route('/settings/', methods=['GET', 'POST'])
+def settings():
+    scripts = dict.fromkeys(unicodescripts.all_scripts(), False)
+    del(scripts['Common'])
+    del(scripts['Inherited'])
+    if flask.request.method == 'POST':
+        if not submitted_request_valid():
+            return 'CSRF error', 400
+        flask.session['supported_scripts'] = [script for script in flask.request.form.getlist('script') if script in scripts]
+    for script in flask.session.get('supported_scripts', ['Latin']):
+        scripts[script] = True
+    return flask.render_template('settings.html',
+                                 scripts=scripts)
+
 @app.route('/diff/')
 def any_diff():
     if not user_logged_in():
