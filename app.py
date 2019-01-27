@@ -171,9 +171,9 @@ def diff(id):
                                  title=results['totitle'],
                                  old_user=results['fromuser'],
                                  new_user=results['touser'],
-                                 old_comment=fixMarkup(results['fromparsedcomment']),
-                                 new_comment=fixMarkup(results['toparsedcomment']),
-                                 body=fixMarkup(results['body']))
+                                 old_comment=fix_markup(results['fromparsedcomment']),
+                                 new_comment=fix_markup(results['toparsedcomment']),
+                                 body=fix_markup(results['body']))
 
 @app.route('/diff/<int:id>/skip', methods=['POST'])
 def diff_skip(id):
@@ -233,7 +233,7 @@ def oauth_callback():
     return flask.redirect(flask.url_for('index'))
 
 
-def fixMarkup(html):
+def fix_markup(html):
     soup = bs4.BeautifulSoup(html, 'html.parser')
     for link in soup.select('a[href]'):
         href = link['href']
@@ -275,7 +275,7 @@ def submitted_request_valid():
     return True
 
 @app.after_request
-def denyFrame(response):
+def deny_frame(response):
     """Disallow embedding the tool’s pages in other websites.
 
     If other websites can embed this tool’s pages, e. g. in <iframe>s,
