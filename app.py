@@ -13,6 +13,8 @@ import string
 import toolforge
 import yaml
 
+import unicodescripts
+
 
 app = flask.Flask(__name__)
 
@@ -239,6 +241,31 @@ def fix_markup(html):
         if href.startswith('/') and not href.startswith('//'):
             link['href'] = 'https://www.wikidata.org' + href
     return flask.Markup(str(soup))
+
+def primary_script_of_diff(html):
+    soup = bs4.BeautifulSoup(html, 'html.parser')
+    elements = [content for content in soup.contents if type(content) is bs4.Tag]
+    texts = []
+    for i in range(0, len(elements), 2):
+        lineno = elements[i].get_text()
+        if (lineno.startswith('label / ') or
+            lineno.startswith('description /') or
+            lineno.startswith('aliases /') or
+            lineno.startswith('links /')):
+            texts += (element.get_text() for element in elements[i+1].select('.diff-addedline, .diff-deletedline'))
+        elif lineno.startswith('Property /') and elements[i+1].select('.wb-monolingualtext-language-name'):
+            texts += (element.get_text() for element in elements[i+1].select('.wb-monolingualtext-value'))
+    scripts = {}
+    for text in texts:
+        for char in text:
+            script = unicodescripts.script(char)
+            if script != 'Common':
+                scripts[script] = scripts.get(script, 0) + 1
+    common_scripts = sorted(scripts.items(), key=lambda item: item[1], reverse=True)
+    if common_scripts:
+        return common_scripts[0][0]
+    else:
+        return None
 
 def full_url(endpoint, **kwargs):
     scheme=flask.request.headers.get('X-Forwarded-Proto', 'http')
