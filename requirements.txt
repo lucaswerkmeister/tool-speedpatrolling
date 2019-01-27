@@ -1,6 +1,7 @@
 beautifulsoup4
 decorator
 flask
+intervaltree
 mwapi
 mwoauth
 pyyaml
