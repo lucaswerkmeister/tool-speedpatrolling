@@ -93,11 +93,7 @@ def authentication_area():
                 flask.Markup.escape(flask.url_for('login')) +
                 flask.Markup(r'">Log in</a>'))
 
-    access_token = mwoauth.AccessToken(**flask.session['oauth_access_token'])
-    identity = mwoauth.identify('https://www.wikidata.org/w/index.php',
-                                consumer_token,
-                                access_token)
-
+    identity = identify()
     return (flask.Markup(r'<span class="navbar-text"><span class="d-none d-sm-inline">Logged in as </span>') +
             user_link(identity['username']) +
             flask.Markup(r'</span>'))
@@ -111,6 +107,17 @@ def authenticated_session():
         return mwapi.Session(host='https://www.wikidata.org', auth=auth, user_agent=user_agent)
     else:
         return None
+
+@memoize
+def identify():
+    if 'oauth_access_token' in flask.session:
+        access_token = mwoauth.AccessToken(**flask.session['oauth_access_token'])
+        return mwoauth.identify('https://www.wikidata.org/w/index.php',
+                                consumer_token,
+                                access_token)
+    else:
+        return None
+
 
 def unpatrolled_changes():
     session = authenticated_session()
