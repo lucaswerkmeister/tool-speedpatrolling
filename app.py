@@ -162,7 +162,13 @@ def settings():
         if not submitted_request_valid():
             return 'CSRF error', 400
         flask.session['supported_scripts'] = [script for script in flask.request.form.getlist('script') if script in scripts]
-    for script in flask.session.get('supported_scripts', ['Latin']):
+    supported_scripts = flask.session.get('supported_scripts', None)
+    if supported_scripts is None:
+        supported_scripts = user_scripts_from_babel()
+        if 'Latin' not in supported_scripts:
+            # if they use this tool, they can read Latin, even if it’s not in their Babel
+            supported_scripts.append('Latin')
+    for script in supported_scripts:
         scripts[script] = True
     return flask.render_template('settings.html',
                                  scripts=scripts)
@@ -300,6 +306,33 @@ def scripts_of_text(text):
             scripts[script] = scripts.get(script, 0) + 1
     common_scripts = sorted(scripts.items(), key=lambda item: item[1], reverse=True)
     return [script for script, count in common_scripts]
+
+def user_scripts_from_babel():
+    session = authenticated_session()
+    languages = session.get(action='query',
+                            meta='babel',
+                            babuser=identify()['username'])['query']['babel'].keys()
+    autonyms = language_autonyms(languages)
+    return scripts_of_text(char for autonym in autonyms.values() for char in autonym)
+
+def language_autonyms(language_codes):
+    wikitext = ''
+    for language_code in language_codes:
+        wikitext += '<span><dt>' + language_code + '</dt><dd>{{#language:' + language_code + '|' + language_code + '}}</dd></span>'
+    html = authenticated_session().get(action='parse',
+                                       text=wikitext,
+                                       contentmodel='wikitext',
+                                       prop=['text'],
+                                       wrapoutputclass='',
+                                       disablelimitreport=True,
+                                       formatversion=2)['parse']['text']
+    soup = bs4.BeautifulSoup(html.strip(), 'html.parser')
+    autonyms = {}
+    for span in soup.contents:
+        language_code = span.dt.string
+        autonym = span.dd.string
+        autonyms[language_code] = autonym
+    return autonyms
 
 def full_url(endpoint, **kwargs):
     scheme=flask.request.headers.get('X-Forwarded-Proto', 'http')
