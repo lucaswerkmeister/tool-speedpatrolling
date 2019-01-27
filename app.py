@@ -150,7 +150,6 @@ def any_diff():
         return flask.redirect(flask.url_for('login'))
     skipped_ids = flask.session.get('skipped_ids', [])
     skipped_ids.sort(reverse=True)
-    print(skipped_ids)
     del skipped_ids[1000:]
     flask.session['skipped_ids'] = skipped_ids
     for id in unpatrolled_changes():
