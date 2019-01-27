@@ -271,7 +271,7 @@ def primary_script_of_text(text):
     scripts = {}
     for char in text:
         script = unicodescripts.script(char)
-        if script != 'Common':
+        if script not in {'Common', 'Inherited', 'Unknown'}:
             scripts[script] = scripts.get(script, 0) + 1
     common_scripts = sorted(scripts.items(), key=lambda item: item[1], reverse=True)
     if common_scripts:
