@@ -286,19 +286,20 @@ def primary_script_of_diff(html):
             texts += (element.get_text() for element in elements[i+1].select('.diff-addedline, .diff-deletedline'))
         elif lineno.startswith('Property /') and elements[i+1].select('.wb-monolingualtext-language-name'):
             texts += (element.get_text() for element in elements[i+1].select('.wb-monolingualtext-value'))
-    return primary_script_of_text(char for text in texts for char in text)
+    scripts = scripts_of_text(char for text in texts for char in text)
+    if scripts:
+        return scripts[0]
+    else:
+        return None
 
-def primary_script_of_text(text):
+def scripts_of_text(text):
     scripts = {}
     for char in text:
         script = unicodescripts.script(char)
         if script not in {'Common', 'Inherited', 'Unknown'}:
             scripts[script] = scripts.get(script, 0) + 1
     common_scripts = sorted(scripts.items(), key=lambda item: item[1], reverse=True)
-    if common_scripts:
-        return common_scripts[0][0]
-    else:
-        return None
+    return [script for script, count in common_scripts]
 
 def full_url(endpoint, **kwargs):
     scheme=flask.request.headers.get('X-Forwarded-Proto', 'http')
