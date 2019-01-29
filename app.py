@@ -109,6 +109,10 @@ def authenticated_session():
         return None
 
 @memoize
+def any_session():
+    return authenticated_session() or mwapi.Session(host='https://www.wikidata.org', user_agent=user_agent)
+
+@memoize
 def identify():
     if 'oauth_access_token' in flask.session:
         access_token = mwoauth.AccessToken(**flask.session['oauth_access_token'])
@@ -186,11 +190,11 @@ def any_diff():
         if id in skipped_ids:
             continue
         if supported_scripts is not None:
-            diff_body = authenticated_session().get(action='compare',
-                                                    fromrev=id,
-                                                    torelative='prev',
-                                                    prop=['diff'],
-                                                    formatversion=2)['compare']['body']
+            diff_body = any_session().get(action='compare',
+                                          fromrev=id,
+                                          torelative='prev',
+                                          prop=['diff'],
+                                          formatversion=2)['compare']['body']
             script = primary_script_of_diff(diff_body)
             if script is not None and script not in supported_scripts:
                 continue
@@ -198,7 +202,7 @@ def any_diff():
 
 @app.route('/diff/<int:id>/')
 def diff(id):
-    session = authenticated_session()
+    session = any_session()
     results = session.get(action='compare',
                           fromrev=id,
                           torelative='prev',
@@ -308,7 +312,7 @@ def scripts_of_text(text):
     return [script for script, count in common_scripts]
 
 def user_scripts_from_babel():
-    session = authenticated_session()
+    session = any_session()
     languages = session.get(action='query',
                             meta='babel',
                             babuser=identify()['username'])['query']['babel'].keys()
@@ -319,13 +323,13 @@ def language_autonyms(language_codes):
     wikitext = ''
     for language_code in language_codes:
         wikitext += '<span><dt>' + language_code + '</dt><dd>{{#language:' + language_code + '|' + language_code + '}}</dd></span>'
-    html = authenticated_session().get(action='parse',
-                                       text=wikitext,
-                                       contentmodel='wikitext',
-                                       prop=['text'],
-                                       wrapoutputclass='',
-                                       disablelimitreport=True,
-                                       formatversion=2)['parse']['text']
+    html = any_session().get(action='parse',
+                             text=wikitext,
+                             contentmodel='wikitext',
+                             prop=['text'],
+                             wrapoutputclass='',
+                             disablelimitreport=True,
+                             formatversion=2)['parse']['text']
     soup = bs4.BeautifulSoup(html.strip(), 'html.parser')
     autonyms = {}
     for span in soup.contents:
