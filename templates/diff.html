@@ -33,13 +33,13 @@
 <form method="post">
   <input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
   <div class="row">
-    <div class="col-sm">
+    <div class="col">
       <button class="btn btn-block btn-primary" formaction="skip" accesskey="s">Skip</button>
     </div>
-    <div class="col-sm">
+    <div class="col">
       <button class="btn btn-block btn-success" formaction="patrol" accesskey="p" {% if not user_can_patrol() %} disabled {% endif %}>Patrol</button>
     </div>
-    <div class="col-sm">
+    <div class="col">
       <button class="btn btn-block btn-danger" formaction="rollback" accesskey="r" {% if not user_can_rollback() %} disabled {% endif %}>Rollback</button>
     </div>
   </div>
