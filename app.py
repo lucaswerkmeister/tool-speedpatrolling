@@ -3,6 +3,7 @@
 import bs4
 import decorator
 import flask
+import ipaddress
 import mwapi
 import mwoauth
 import os
@@ -69,9 +70,21 @@ def form_attributes(name):
             flask.Markup(r'" ') +
             form_value(name))
 
+def is_ip_address(val):
+    try:
+        ipaddress.ip_address(val)
+        return True
+    except ValueError:
+        return False
+
 @app.template_filter()
 def user_link(user_name):
-    return (flask.Markup(r'<a href="https://www.wikidata.org/wiki/User:') +
+    if is_ip_address(user_name):
+        user_link_prefix = 'https://www.wikidata.org/wiki/Special:Contributions/'
+    else:
+        user_link_prefix = 'https://www.wikidata.org/wiki/User:'
+    return (flask.Markup(r'<a href="') +
+            flask.Markup(user_link_prefix) +
             flask.Markup.escape(user_name.replace(' ', '_')) +
             flask.Markup(r'">') +
             flask.Markup(r'<bdi>') +
