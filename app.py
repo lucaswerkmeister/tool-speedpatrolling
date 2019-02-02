@@ -196,10 +196,10 @@ def settings():
 def any_diff():
     if not user_logged_in():
         return flask.redirect(flask.url_for('login'))
-    skipped_ids = ids.get(flask.session, 'skipped_ids')
+    skipped_rev_ids = ids.get(flask.session, 'skipped_rev_ids')
     supported_scripts = flask.session.get('supported_scripts')
     for id in unpatrolled_changes():
-        if id in skipped_ids:
+        if id in skipped_rev_ids:
             continue
         if supported_scripts is not None:
             diff_body = any_session().get(action='compare',
@@ -233,7 +233,7 @@ def diff(id):
 def diff_skip(id):
     if not submitted_request_valid():
         return 'CSRF error', 400
-    ids.append(flask.session, 'skipped_ids', id)
+    ids.append(flask.session, 'skipped_rev_ids', id)
     return flask.redirect(flask.url_for('any_diff'))
 
 @app.route('/diff/<int:id>/patrol', methods=['POST'])
