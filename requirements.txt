@@ -4,6 +4,7 @@ flask
 intervaltree
 mwapi
 mwoauth
+pytest
 pyyaml
 requests
 requests_oauthlib
