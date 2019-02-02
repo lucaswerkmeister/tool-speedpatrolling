@@ -187,32 +187,32 @@ def any_diff():
     skipped_rev_ids = ids.get(flask.session, 'skipped_rev_ids')
     ignored_page_ids = ids.get(flask.session, 'ignored_page_ids')
     supported_scripts = flask.session.get('supported_scripts')
-    for id in ids.unpatrolled_changes(authenticated_session()):
-        if id in skipped_rev_ids:
+    for rev_id in ids.unpatrolled_changes(authenticated_session()):
+        if rev_id in skipped_rev_ids:
             continue
-        if ids.rev_id_to_page_id(id, any_session()) in ignored_page_ids:
+        if ids.rev_id_to_page_id(rev_id, any_session()) in ignored_page_ids:
             continue
         if supported_scripts is not None:
             diff_body = any_session().get(action='compare',
-                                          fromrev=id,
+                                          fromrev=rev_id,
                                           torelative='prev',
                                           prop=['diff'],
                                           formatversion=2)['compare']['body']
             script = scripts.primary_script_of_diff(diff_body)
             if script is not None and script not in supported_scripts:
                 continue
-        return flask.redirect(flask.url_for('diff', id=id))
+        return flask.redirect(flask.url_for('diff', rev_id=rev_id))
 
-@app.route('/diff/<int:id>/')
-def diff(id):
+@app.route('/diff/<int:rev_id>/')
+def diff(rev_id):
     session = any_session()
     results = session.get(action='compare',
-                          fromrev=id,
+                          fromrev=rev_id,
                           torelative='prev',
                           prop=['title', 'user', 'parsedcomment', 'diff'],
                           formatversion=2)['compare']
     return flask.render_template('diff.html',
-                                 id=id,
+                                 rev_id=rev_id,
                                  title=results['totitle'],
                                  old_user=results['fromuser'],
                                  new_user=results['touser'],
@@ -220,14 +220,14 @@ def diff(id):
                                  new_comment=fix_markup(results['toparsedcomment']),
                                  body=fix_markup(results['body']))
 
-@app.route('/diff/<int:id>/skip', methods=['POST'])
-def diff_skip(id):
+@app.route('/diff/<int:rev_id>/skip', methods=['POST'])
+def diff_skip(rev_id):
     if not submitted_request_valid():
         return 'CSRF error', 400
 
-    ids.append(flask.session, 'skipped_rev_ids', id)
+    ids.append(flask.session, 'skipped_rev_ids', rev_id)
 
-    page_id = ids.rev_id_to_page_id(id, any_session())
+    page_id = ids.rev_id_to_page_id(rev_id, any_session())
     if page_id in ids.get(flask.session, 'skipped_page_ids'):
         if page_id not in ids.get(flask.session, 'acted_page_ids'):
             ids.append(flask.session, 'ignored_page_ids', page_id)
@@ -236,30 +236,30 @@ def diff_skip(id):
 
     return flask.redirect(flask.url_for('any_diff'))
 
-@app.route('/diff/<int:id>/patrol', methods=['POST'])
-def diff_patrol(id):
+@app.route('/diff/<int:rev_id>/patrol', methods=['POST'])
+def diff_patrol(rev_id):
     if not submitted_request_valid():
         return 'CSRF error', 400
     session = authenticated_session()
-    ids.append(flask.session, 'acted_page_ids', ids.rev_id_to_page_id(id, session))
+    ids.append(flask.session, 'acted_page_ids', ids.rev_id_to_page_id(rev_id, session))
     token = session.get(action='query',
                         meta='tokens',
                         type='patrol')['query']['tokens']['patroltoken']
     session.post(action='patrol',
-                 revid=id,
+                 revid=rev_id,
                  token=token)
     return flask.redirect(flask.url_for('any_diff'))
 
-@app.route('/diff/<int:id>/rollback', methods=['POST'])
-def diff_rollback(id):
+@app.route('/diff/<int:rev_id>/rollback', methods=['POST'])
+def diff_rollback(rev_id):
     if not submitted_request_valid():
         return 'CSRF error', 400
     session = authenticated_session()
-    ids.append(flask.session, 'acted_page_ids', ids.rev_id_to_page_id(id, session))
+    ids.append(flask.session, 'acted_page_ids', ids.rev_id_to_page_id(rev_id, session))
     results = session.get(action='query',
                           meta='tokens',
                           type='rollback',
-                          revids=[str(id)],
+                          revids=[str(rev_id)],
                           prop='revisions',
                           rvprop='user',
                           formatversion='2')
