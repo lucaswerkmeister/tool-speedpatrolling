@@ -14,6 +14,7 @@ import string
 import toolforge
 import yaml
 
+import ids
 import scripts
 import unicodescripts
 
@@ -195,10 +196,7 @@ def settings():
 def any_diff():
     if not user_logged_in():
         return flask.redirect(flask.url_for('login'))
-    skipped_ids = flask.session.get('skipped_ids', [])
-    skipped_ids.sort(reverse=True)
-    del skipped_ids[1000:]
-    flask.session['skipped_ids'] = skipped_ids
+    skipped_ids = ids.get(flask.session, 'skipped_ids')
     supported_scripts = flask.session.get('supported_scripts')
     for id in unpatrolled_changes():
         if id in skipped_ids:
@@ -235,9 +233,7 @@ def diff(id):
 def diff_skip(id):
     if not submitted_request_valid():
         return 'CSRF error', 400
-    skipped_ids = flask.session.get('skipped_ids', [])
-    skipped_ids.append(id)
-    flask.session['skipped_ids'] = skipped_ids
+    ids.append(flask.session, 'skipped_ids', id)
     return flask.redirect(flask.url_for('any_diff'))
 
 @app.route('/diff/<int:id>/patrol', methods=['POST'])
