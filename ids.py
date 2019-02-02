@@ -15,3 +15,9 @@ def append(dict, name, id):
     ids = dict.get(name, [])
     ids.append(id)
     dict[name] = ids
+
+
+def rev_id_to_page_id(rev_id, session):
+    return session.get(action='query',
+                       revids=[rev_id],
+                       formatversion=2)['query']['pages'][0]['pageid']
