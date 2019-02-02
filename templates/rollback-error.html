@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='accesskey.css') }}">
+<script src="{{ url_for('static', filename='accesskey.js') }}" async="true"></script>
+{% endblock %}
+{% block main %}
+<div class="jumbotron alert alert-danger">
+  <h1 class="display-4">Error</h1>
+  <p class="lead">
+    There was an error while attempting to roll back
+    revision <a href="https://www.wikidata.org/wiki/Special:Diff/{{ rev_id }}">{{ rev_id }}</a>
+    and other edits by user {{ user | user_link }}.
+  </p>
+  <p>
+    MediaWiki returned the following information:
+  </p>
+  {{ info }}
+  <form method="post">
+    <input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+    <button class="btn btn-block btn-primary btn-large" formaction="skip" accesskey="s">Skip</button>
+  </form>
+</div>
+{% endblock %}

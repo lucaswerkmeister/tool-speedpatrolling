@@ -267,11 +267,26 @@ def diff_rollback(rev_id):
     page = results['query']['pages'][0]
     pageid = page['pageid']
     user = page['revisions'][0]['user']
-    session.post(action='rollback',
-                 pageid=pageid,
-                 user=user,
-                 token=token)
-    return flask.redirect(flask.url_for('any_diff'))
+    try:
+        session.post(action='rollback',
+                     pageid=pageid,
+                     user=user,
+                     token=token)
+    except mwapi.errors.APIError as error:
+        # TODO use errorformat='html' once mwapi supports it (mediawiki-utilities/python-mwapi#34)
+        info_html = session.get(action='parse',
+                                text=error.info,
+                                prop=['text'],
+                                wrapoutputclass=None,
+                                disablelimitreport=True,
+                                contentmodel='wikitext',
+                                formatversion=2)['parse']['text']
+        return flask.render_template('rollback-error.html',
+                                     rev_id=rev_id,
+                                     user=user,
+                                     info=flask.Markup(info_html))
+    else:
+        return flask.redirect(flask.url_for('any_diff'))
 
 @app.route('/login')
 def login():
