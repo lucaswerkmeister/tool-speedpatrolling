@@ -48,6 +48,11 @@ def unpatrolled_changes(session):
                               rcprop=['ids'],
                               rcshow='unpatrolled',
                               rctype=['edit'], # TODO consider including 'new' as well
+                              rcnamespace=[
+                                  0, # Main (Item)
+                                  120, # Property
+                                  146, # Lexeme
+                              ],
                               rclimit='max',
                               continuation=True):
         for change in result['query']['recentchanges']:
