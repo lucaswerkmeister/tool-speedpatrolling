@@ -197,9 +197,12 @@ def any_diff():
     if not user_logged_in():
         return flask.redirect(flask.url_for('login'))
     skipped_rev_ids = ids.get(flask.session, 'skipped_rev_ids')
+    ignored_page_ids = ids.get(flask.session, 'ignored_page_ids')
     supported_scripts = flask.session.get('supported_scripts')
     for id in unpatrolled_changes():
         if id in skipped_rev_ids:
+            continue
+        if ids.rev_id_to_page_id(id, any_session()) in ignored_page_ids:
             continue
         if supported_scripts is not None:
             diff_body = any_session().get(action='compare',
@@ -233,7 +236,16 @@ def diff(id):
 def diff_skip(id):
     if not submitted_request_valid():
         return 'CSRF error', 400
+
     ids.append(flask.session, 'skipped_rev_ids', id)
+
+    page_id = ids.rev_id_to_page_id(id, any_session())
+    if page_id in ids.get(flask.session, 'skipped_page_ids'):
+        if page_id not in ids.get(flask.session, 'acted_page_ids'):
+            ids.append(flask.session, 'ignored_page_ids', page_id)
+    else:
+        ids.append(flask.session, 'skipped_page_ids', page_id)
+
     return flask.redirect(flask.url_for('any_diff'))
 
 @app.route('/diff/<int:id>/patrol', methods=['POST'])
@@ -241,6 +253,7 @@ def diff_patrol(id):
     if not submitted_request_valid():
         return 'CSRF error', 400
     session = authenticated_session()
+    ids.append(flask.session, 'acted_page_ids', ids.rev_id_to_page_id(id, session))
     token = session.get(action='query',
                         meta='tokens',
                         type='patrol')['query']['tokens']['patroltoken']
@@ -254,6 +267,7 @@ def diff_rollback(id):
     if not submitted_request_valid():
         return 'CSRF error', 400
     session = authenticated_session()
+    ids.append(flask.session, 'acted_page_ids', ids.rev_id_to_page_id(id, session))
     results = session.get(action='query',
                           meta='tokens',
                           type='rollback',
