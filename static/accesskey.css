@@ -1,3 +1,6 @@
-button[accesskey]::first-letter {
-    text-decoration: underline;
+/* best approximation for “does the user have a hardware keyboard” */
+@media not (pointer: coarse) {
+    button[accesskey]::first-letter {
+        text-decoration: underline;
+    }
 }
