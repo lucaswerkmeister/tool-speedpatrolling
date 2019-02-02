@@ -138,18 +138,6 @@ def identify():
         return None
 
 
-def unpatrolled_changes():
-    session = authenticated_session()
-    for result in session.get(action='query',
-                              list='recentchanges',
-                              rcprop=['ids'],
-                              rcshow='unpatrolled',
-                              rctype=['edit'], # TODO consider including 'new' as well
-                              rclimit='max',
-                              continuation=True):
-        for change in result['query']['recentchanges']:
-            yield change['revid']
-
 @memoize
 def user_rights():
     session = authenticated_session()
@@ -199,7 +187,7 @@ def any_diff():
     skipped_rev_ids = ids.get(flask.session, 'skipped_rev_ids')
     ignored_page_ids = ids.get(flask.session, 'ignored_page_ids')
     supported_scripts = flask.session.get('supported_scripts')
-    for id in unpatrolled_changes():
+    for id in ids.unpatrolled_changes(authenticated_session()):
         if id in skipped_rev_ids:
             continue
         if ids.rev_id_to_page_id(id, any_session()) in ignored_page_ids:

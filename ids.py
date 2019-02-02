@@ -21,3 +21,15 @@ def rev_id_to_page_id(rev_id, session):
     return session.get(action='query',
                        revids=[rev_id],
                        formatversion=2)['query']['pages'][0]['pageid']
+
+
+def unpatrolled_changes(session):
+    for result in session.get(action='query',
+                              list='recentchanges',
+                              rcprop=['ids'],
+                              rcshow='unpatrolled',
+                              rctype=['edit'], # TODO consider including 'new' as well
+                              rclimit='max',
+                              continuation=True):
+        for change in result['query']['recentchanges']:
+            yield change['revid']
