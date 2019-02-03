@@ -15,21 +15,18 @@ rev_id_to_page_id_cache_lock = threading.RLock()
 
 
 def get(dict, name):
-    """Get a list of IDs by name from a container.
-
-    The list is automatically limited to the 1000 highest IDs.
-    """
+    """Get a list of IDs by name from a container."""
     ids = dict.get(name, [])
-    ids.sort(reverse=True)
-    del ids[1000:]
-    dict[name] = ids
     return ids
 
 
 def append(dict, name, id):
-    """Append an ID to a list of IDs by that name in a container."""
+    """Append an ID to a list of IDs by that name in a container.
+
+    The list is automatically limited to the 1000 most recent IDs.
+    """
     ids = dict.get(name, [])
-    ids.append(id)
+    ids = [id] + ids[:1000]
     dict[name] = ids
 
 
