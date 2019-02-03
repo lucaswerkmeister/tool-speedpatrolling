@@ -8,7 +8,9 @@
   {% if user_logged_in() %}
   <a class="btn btn-primary btn-large" href="{{ url_for('any_diff') }}">Start</a>
   {% else %}
-  <a class="btn btn-primary btn-large" href="{{ url_for('login') }}">Log in</a> to get started
+  <p>
+    <a class="btn btn-primary btn-large" href="{{ url_for('login') }}">Log in</a> to get started
+  </p>
   {% endif %}
   <a class="btn btn-secondary btn-large" href="{{ url_for('settings') }}">Settings</a>
 </div>
