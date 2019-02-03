@@ -301,6 +301,11 @@ def oauth_callback():
     flask.session['oauth_access_token'] = dict(zip(access_token._fields, access_token))
     return flask.redirect(flask.url_for('index'))
 
+@app.route('/logout')
+def logout():
+    flask.session.clear()
+    return flask.redirect(flask.url_for('index'))
+
 
 def fix_markup(html):
     soup = bs4.BeautifulSoup(html, 'html.parser')
