@@ -163,8 +163,8 @@ def index():
 @app.route('/settings/', methods=['GET', 'POST'])
 def settings():
     scripts = dict.fromkeys(unicodescripts.all_scripts(), False)
-    del(scripts['Common'])
-    del(scripts['Inherited'])
+    del scripts['Common']
+    del scripts['Inherited']
     if flask.request.method == 'POST':
         if not submitted_request_valid():
             return 'CSRF error', 400
