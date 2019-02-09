@@ -23,10 +23,10 @@ def get(dict, name):
 def append(dict, name, id):
     """Append an ID to a list of IDs by that name in a container.
 
-    The list is automatically limited to the 1000 most recent IDs.
+    The list is automatically limited to the 250 most recent IDs.
     """
     ids = dict.get(name, [])
-    ids = [id] + ids[:1000]
+    ids = [id] + ids[:250]
     dict[name] = ids
 
 
