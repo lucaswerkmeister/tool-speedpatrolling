@@ -18,7 +18,7 @@ def test_ids_fit_in_session():
                 speedpatrolling.ids.append(session, 'skipped_page_ids', page_id)
             for page_id in range(base_page_id, base_page_id + 10000):
                 speedpatrolling.ids.append(session, 'ignored_page_ids', page_id)
-        request = urllib.request.Request('http://localhost')
+        request = urllib.request.Request('http://localhost' + speedpatrolling.app.config.get('APPLICATION_ROOT', '/'))
         client.cookie_jar.add_cookie_header(request)
         header = request.get_header('Cookie')
         assert len(header) <= 4093
