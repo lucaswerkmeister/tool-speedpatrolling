@@ -1,4 +1,5 @@
 import flask
+import pytest
 import urllib.request
 
 import app as speedpatrolling
@@ -21,3 +22,13 @@ def test_ids_fit_in_session():
         client.cookie_jar.add_cookie_header(request)
         header = request.get_header('Cookie')
         assert len(header) <= 4093
+
+
+@pytest.mark.parametrize('val, expected', [
+    ('Lucas Werkmeister', False),
+    ('127.0.0.1', True),
+    ('::1', True),
+])
+def test_is_ip_address(val, expected):
+    actual = speedpatrolling.is_ip_address(val)
+    assert expected == actual
