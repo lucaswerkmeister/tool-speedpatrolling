@@ -7,8 +7,10 @@
 <link rel="stylesheet" href="https://www.wikidata.org/w/load.php?modules=mediawiki.legacy.shared|mediawiki.diff.styles|wikibase.common&only=styles">
 {% endblock %}
 {% block main %}
-<h2><a href="https://www.wikidata.org/wiki/{{ title }}">{{ title }}</a></h2>
-<p>(<a href="https://www.wikidata.org/w/index.php?title={{ title }}&action=history">history</a>)</p>
+<h2>
+  <a href="https://www.wikidata.org/wiki/{{ title }}">{{ title }}</a>
+  <span class="text-muted">(<a href="https://www.wikidata.org/w/index.php?title={{ title }}&action=history">history</a>)</span>
+</h2>
 <table class="diff">
   <colgroup>
     <col class="diff-marker">
