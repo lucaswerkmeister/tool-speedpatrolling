@@ -32,3 +32,12 @@ def test_ids_fit_in_session():
 def test_is_ip_address(val, expected):
     actual = speedpatrolling.is_ip_address(val)
     assert expected == actual
+
+
+@pytest.mark.parametrize('input, expected', [
+    ('<a href="/wiki/Q42">Douglas Adams</a>', '<a href="https://www.wikidata.org/wiki/Q42">Douglas Adams</a>'),
+    ('<a href="//en.wikipedia.org/wiki/Douglas_Adams">Douglas Adams</a>', '<a href="//en.wikipedia.org/wiki/Douglas_Adams">Douglas Adams</a>'),
+])
+def test_fix_markup(input, expected):
+    actual = speedpatrolling.fix_markup(input)
+    assert expected == actual
