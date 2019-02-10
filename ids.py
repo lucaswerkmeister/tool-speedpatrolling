@@ -1,4 +1,5 @@
 import cachetools
+import hashlib
 import threading
 
 
@@ -12,10 +13,14 @@ class MyLRUCache(cachetools.LRUCache):
 
 rev_id_to_page_id_cache = MyLRUCache(maxsize=1024*1024)
 rev_id_to_page_id_cache_lock = threading.RLock()
+rev_id_to_user_fake_id_cache = MyLRUCache(maxsize=1024*1024)
+rev_id_to_user_fake_id_cache_lock = threading.RLock()
 
 
 def id_limit(name):
-    if name.endswith('_page_ids'):
+    if name.endswith('_user_fake_ids'):
+        return 25
+    elif name.endswith('_page_ids'):
         return 100
     else:
         return 250
@@ -38,6 +43,10 @@ def append(dict, name, id):
     dict[name] = ids
 
 
+def user_fake_id(user_name):
+    return int.from_bytes(hashlib.sha256(user_name.encode('utf8')).digest()[:4], 'big')
+
+
 @cachetools.cached(cache=rev_id_to_page_id_cache,
                    key=lambda rev_id, session: rev_id,
                    lock=rev_id_to_page_id_cache_lock)
@@ -47,10 +56,21 @@ def rev_id_to_page_id(rev_id, session):
                        formatversion=2)['query']['pages'][0]['pageid']
 
 
+@cachetools.cached(cache=rev_id_to_user_fake_id_cache,
+                   key=lambda rev_id, session: rev_id,
+                   lock=rev_id_to_user_fake_id_cache_lock)
+def rev_id_to_user_fake_id(rev_id, session):
+    return user_fake_id(session.get(action='query',
+                                    revids=[rev_id],
+                                    prop=['revisions'],
+                                    rvprop=['user'],
+                                    formatversion=2)['query']['pages'][0]['revisions'][0]['user'])
+
+
 def unpatrolled_changes(session):
     for result in session.get(action='query',
                               list='recentchanges',
-                              rcprop=['ids'],
+                              rcprop=['ids', 'user'],
                               rcshow='unpatrolled',
                               rctype=['edit'], # TODO consider including 'new' as well
                               rcnamespace=[
@@ -63,4 +83,6 @@ def unpatrolled_changes(session):
         for change in result['query']['recentchanges']:
             with rev_id_to_page_id_cache_lock:
                 rev_id_to_page_id_cache[change['revid']] = change['pageid']
+            with rev_id_to_user_fake_id_cache_lock:
+                rev_id_to_user_fake_id_cache[change['revid']] = user_fake_id(change['user'])
             yield change['revid']

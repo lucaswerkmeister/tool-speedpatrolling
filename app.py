@@ -186,11 +186,14 @@ def any_diff():
         return flask.redirect(flask.url_for('login'))
     skipped_rev_ids = ids.get(flask.session, 'skipped_rev_ids')
     ignored_page_ids = ids.get(flask.session, 'ignored_page_ids')
+    ignored_user_fake_ids = ids.get(flask.session, 'ignored_user_fake_ids')
     supported_scripts = flask.session.get('supported_scripts')
     for rev_id in ids.unpatrolled_changes(authenticated_session()):
         if rev_id in skipped_rev_ids:
             continue
         if ids.rev_id_to_page_id(rev_id, any_session()) in ignored_page_ids:
+            continue
+        if ids.rev_id_to_user_fake_id(rev_id, any_session()) in ignored_user_fake_ids:
             continue
         if supported_scripts is not None:
             diff_body = any_session().get(action='compare',
@@ -227,10 +230,18 @@ def diff_skip(rev_id):
 
     ids.append(flask.session, 'skipped_rev_ids', rev_id)
 
+    user_fake_id = ids.rev_id_to_user_fake_id(rev_id, any_session())
     page_id = ids.rev_id_to_page_id(rev_id, any_session())
+
+    if user_fake_id in ids.get(flask.session, 'skipped_user_fake_ids'):
+        if user_fake_id not in ids.get(flask.session, 'acted_user_fake_ids'):
+            ids.append(flask.session, 'ignored_user_fake_ids', user_fake_id)
+
     if page_id in ids.get(flask.session, 'skipped_page_ids'):
         if page_id not in ids.get(flask.session, 'acted_page_ids'):
             ids.append(flask.session, 'ignored_page_ids', page_id)
+            if user_fake_id not in ids.get(flask.session, 'skipped_user_fake_ids'):
+                ids.append(flask.session, 'skipped_user_fake_ids', user_fake_id)
     else:
         ids.append(flask.session, 'skipped_page_ids', page_id)
 
@@ -242,6 +253,7 @@ def diff_patrol(rev_id):
         return 'CSRF error', 400
     session = authenticated_session()
     ids.append(flask.session, 'acted_page_ids', ids.rev_id_to_page_id(rev_id, session))
+    ids.append(flask.session, 'acted_user_fake_ids', ids.rev_id_to_user_fake_id(rev_id, session))
     token = session.get(action='query',
                         meta='tokens',
                         type='patrol')['query']['tokens']['patroltoken']
@@ -256,6 +268,7 @@ def diff_rollback(rev_id):
         return 'CSRF error', 400
     session = authenticated_session()
     ids.append(flask.session, 'acted_page_ids', ids.rev_id_to_page_id(rev_id, session))
+    ids.append(flask.session, 'acted_user_fake_ids', ids.rev_id_to_user_fake_id(rev_id, session))
     results = session.get(action='query',
                           meta='tokens',
                           type='rollback',

@@ -22,6 +22,15 @@ def test_session_fits_in_cookie():
                 speedpatrolling.ids.append(session, 'skipped_page_ids', page_id)
             for page_id in range(base_page_id + 20000, base_page_id + 30000):
                 speedpatrolling.ids.append(session, 'ignored_page_ids', page_id)
+            for user_number in range(1000):
+                user_name = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(32))
+                speedpatrolling.ids.append(session, 'acted_user_fake_ids', speedpatrolling.ids.user_fake_id(user_name))
+            for user_number in range(1000):
+                user_name = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(32))
+                speedpatrolling.ids.append(session, 'skipped_user_fake_ids', speedpatrolling.ids.user_fake_id(user_name))
+            for user_number in range(1000):
+                user_name = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(32))
+                speedpatrolling.ids.append(session, 'ignored_user_fake_ids', speedpatrolling.ids.user_fake_id(user_name))
             session['csrf_token'] = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(64))
             access_token = mwoauth.AccessToken('%x' % random.getrandbits(128), '%x' % random.getrandbits(128))
             session['oauth_access_token'] = dict(zip(access_token._fields, access_token))
