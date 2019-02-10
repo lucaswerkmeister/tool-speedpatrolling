@@ -1,11 +1,15 @@
 import flask
+import mwoauth
 import pytest
+import random
+import string
 import urllib.request
 
 import app as speedpatrolling
+import unicodescripts
 
 
-def test_ids_fit_in_session():
+def test_session_fits_in_cookie():
     base_rev_id = 850000000
     base_page_id = 60000000
     with speedpatrolling.app.test_client() as client:
@@ -18,6 +22,12 @@ def test_ids_fit_in_session():
                 speedpatrolling.ids.append(session, 'skipped_page_ids', page_id)
             for page_id in range(base_page_id, base_page_id + 10000):
                 speedpatrolling.ids.append(session, 'ignored_page_ids', page_id)
+            session['csrf_token'] = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(64))
+            access_token = mwoauth.AccessToken('%x' % random.getrandbits(128), '%x' % random.getrandbits(128))
+            session['oauth_access_token'] = dict(zip(access_token._fields, access_token))
+            # oauth_request_token not tested
+            session['supported_scripts'] = list(unicodescripts.all_scripts())
+
         request = urllib.request.Request('http://localhost' + speedpatrolling.app.config.get('APPLICATION_ROOT', '/'))
         client.cookie_jar.add_cookie_header(request)
         header = request.get_header('Cookie')
