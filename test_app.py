@@ -18,9 +18,9 @@ def test_session_fits_in_cookie():
                 speedpatrolling.ids.append(session, 'skipped_rev_ids', rev_id)
             for page_id in range(base_page_id, base_page_id + 10000):
                 speedpatrolling.ids.append(session, 'acted_page_ids', page_id)
-            for page_id in range(base_page_id, base_page_id + 10000):
+            for page_id in range(base_page_id + 10000, base_page_id + 20000):
                 speedpatrolling.ids.append(session, 'skipped_page_ids', page_id)
-            for page_id in range(base_page_id, base_page_id + 10000):
+            for page_id in range(base_page_id + 20000, base_page_id + 30000):
                 speedpatrolling.ids.append(session, 'ignored_page_ids', page_id)
             session['csrf_token'] = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(64))
             access_token = mwoauth.AccessToken('%x' % random.getrandbits(128), '%x' % random.getrandbits(128))

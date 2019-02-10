@@ -14,6 +14,13 @@ rev_id_to_page_id_cache = MyLRUCache(maxsize=1024*1024)
 rev_id_to_page_id_cache_lock = threading.RLock()
 
 
+def id_limit(name):
+    if name.endswith('_page_ids'):
+        return 100
+    else:
+        return 250
+
+
 def get(dict, name):
     """Get a list of IDs by name from a container."""
     ids = dict.get(name, [])
@@ -23,10 +30,11 @@ def get(dict, name):
 def append(dict, name, id):
     """Append an ID to a list of IDs by that name in a container.
 
-    The list is automatically limited to the 250 most recent IDs.
+    The list is automatically limited to the most recent IDs,
+    with the limit depending on the ID type (see id_limit).
     """
     ids = dict.get(name, [])
-    ids = [id] + ids[:250]
+    ids = [id] + ids[:id_limit(name)]
     dict[name] = ids
 
 
