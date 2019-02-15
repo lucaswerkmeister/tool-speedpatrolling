@@ -38,6 +38,11 @@ if 'oauth' in app.config:
     consumer_token = mwoauth.ConsumerToken(app.config['oauth']['consumer_key'], app.config['oauth']['consumer_secret'])
 
 
+def log(type, message):
+    if app.config.get('DEBUG_' + type, False):
+        print('[%s] %s' % (type, message))
+
+
 @decorator.decorator
 def memoize(func, *args, **kwargs):
     if args or kwargs:
@@ -370,12 +375,15 @@ def submitted_request_valid():
     submitted_token = flask.request.form.get('csrf_token', None)
     if not real_token:
         # we never expected a POST
+        log('CSRF', 'no real token')
         return False
     if not submitted_token:
         # token got lost or attacker did not supply it
+        log('CSRF', 'no submitted token')
         return False
     if submitted_token != real_token:
         # incorrect token (could be outdated or incorrectly forged)
+        log('CSRF', 'token mismatch')
         return False
     if not flask.request.referrer.startswith(full_url('index')):
         # correct token but not coming from the correct page; for
@@ -385,6 +393,7 @@ def submitted_request_valid():
         # hosted on the https://tools.wmflabs.org domain), so checking
         # the Referer header is our only protection against attackers
         # from other Toolforge tools
+        log('CSRF', 'referrer mismatch: should start with %s, got %s' % (full_url('index'), flask.request.referrer))
         return False
     return True
 
