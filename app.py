@@ -310,6 +310,7 @@ def diff_rollback(rev_id):
 def login():
     redirect, request_token = mwoauth.initiate('https://www.wikidata.org/w/index.php', consumer_token, user_agent=user_agent)
     flask.session['oauth_request_token'] = dict(zip(request_token._fields, request_token))
+    flask.session.permanent = True
     return flask.redirect(redirect)
 
 @app.route('/oauth/callback')
