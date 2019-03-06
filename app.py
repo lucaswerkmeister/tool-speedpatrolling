@@ -174,6 +174,7 @@ def settings():
         if not submitted_request_valid():
             return 'CSRF error', 400
         flask.session['supported_scripts'] = [script for script in flask.request.form.getlist('script') if script in scripts]
+        return flask.redirect(flask.url_for('index'), code=303)
     supported_scripts = flask.session.get('supported_scripts', None)
     if supported_scripts is None:
         supported_scripts = user_scripts_from_babel()
