@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='accesskey.css') }}">
+{% endblock %}
+{% block main %}
+<div class="jumbotron alert alert-danger">
+  <h1 class="display-4">Error</h1>
+  <p class="lead">
+    There was an error while attempting to load unpatrolled changes.
+    Most likely, your account is not <a href="https://www.wikidata.org/wiki/Wikidata:Autoconfirmed_users">autoconfirmed</a> yet.
+  </p>
+  <p>
+    MediaWiki returned the following information:
+  </p>
+  {{ info }}
+  <a class="btn btn-primary btn-large" href="{{ url_for('index') }}">Back to index</a>
+</div>
+{% endblock %}

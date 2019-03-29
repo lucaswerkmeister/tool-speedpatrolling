@@ -194,23 +194,35 @@ def any_diff():
     ignored_page_ids = ids.get(flask.session, 'ignored_page_ids')
     ignored_user_fake_ids = ids.get(flask.session, 'ignored_user_fake_ids')
     supported_scripts = flask.session.get('supported_scripts')
-    for rev_id in ids.unpatrolled_changes(authenticated_session()):
-        if rev_id in skipped_rev_ids:
-            continue
-        if ids.rev_id_to_page_id(rev_id, any_session()) in ignored_page_ids:
-            continue
-        if ids.rev_id_to_user_fake_id(rev_id, any_session()) in ignored_user_fake_ids:
-            continue
-        if supported_scripts is not None:
-            diff_body = any_session().get(action='compare',
-                                          fromrev=rev_id,
-                                          torelative='prev',
-                                          prop=['diff'],
-                                          formatversion=2)['compare']['body']
-            script = scripts.primary_script_of_diff(diff_body)
-            if script is not None and script not in supported_scripts:
+    try:
+        for rev_id in ids.unpatrolled_changes(authenticated_session()):
+            if rev_id in skipped_rev_ids:
                 continue
-        return flask.redirect(flask.url_for('diff', rev_id=rev_id))
+            if ids.rev_id_to_page_id(rev_id, any_session()) in ignored_page_ids:
+                continue
+            if ids.rev_id_to_user_fake_id(rev_id, any_session()) in ignored_user_fake_ids:
+                continue
+            if supported_scripts is not None:
+                diff_body = any_session().get(action='compare',
+                                              fromrev=rev_id,
+                                              torelative='prev',
+                                              prop=['diff'],
+                                              formatversion=2)['compare']['body']
+                script = scripts.primary_script_of_diff(diff_body)
+                if script is not None and script not in supported_scripts:
+                    continue
+            return flask.redirect(flask.url_for('diff', rev_id=rev_id))
+    except mwapi.errors.APIError as error:
+        # TODO use errorformat='html' once mwapi supports it (mediawiki-utilities/python-mwapi#34)
+        info_html = any_session().get(action='parse',
+                                      text=error.info,
+                                      prop=['text'],
+                                      wrapoutputclass=None,
+                                      disablelimitreport=True,
+                                      contentmodel='wikitext',
+                                      formatversion=2)['parse']['text']
+        return flask.render_template('permission-error.html',
+                                     info=flask.Markup(info_html))
 
 @app.route('/diff/<int:rev_id>/')
 def diff(rev_id):
