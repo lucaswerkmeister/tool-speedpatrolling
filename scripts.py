@@ -20,7 +20,8 @@ def primary_script_of_diff(html):
     """Determine the primary script of a Wikidata diff.
 
     Only the scripts of terms, sitelinks, monolingual text values and
-    Commons media are considered."""
+    Commons media are considered. For this to work, the diff UI
+    (specifically, the headers) must be in English."""
     soup = bs4.BeautifulSoup(html, 'html.parser')
     elements = [content for content in soup.contents if type(content) is bs4.Tag]
     texts = []

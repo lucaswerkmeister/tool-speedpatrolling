@@ -207,6 +207,7 @@ def any_diff():
                                               fromrev=rev_id,
                                               torelative='prev',
                                               prop=['diff'],
+                                              uselang='en',
                                               formatversion=2)['compare']['body']
                 script = scripts.primary_script_of_diff(diff_body)
                 if script is not None and script not in supported_scripts:
