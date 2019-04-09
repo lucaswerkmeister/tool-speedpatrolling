@@ -11,8 +11,8 @@ class MyLRUCache(cachetools.LRUCache):
         # no self.__update(key)
 
 
-rev_id_to_page_id_cache = MyLRUCache(maxsize=1024*1024)
-rev_id_to_page_id_cache_lock = threading.RLock()
+rev_id_to_page_id_and_title_cache = MyLRUCache(maxsize=1024*1024)
+rev_id_to_page_id_and_title_cache_lock = threading.RLock()
 rev_id_to_user_fake_id_cache = MyLRUCache(maxsize=1024*1024)
 rev_id_to_user_fake_id_cache_lock = threading.RLock()
 
@@ -47,13 +47,21 @@ def user_fake_id(user_name):
     return int.from_bytes(hashlib.sha256(user_name.encode('utf8')).digest()[:4], 'big')
 
 
-@cachetools.cached(cache=rev_id_to_page_id_cache,
+@cachetools.cached(cache=rev_id_to_page_id_and_title_cache,
                    key=lambda rev_id, session: rev_id,
-                   lock=rev_id_to_page_id_cache_lock)
+                   lock=rev_id_to_page_id_and_title_cache_lock)
+def rev_id_to_page_id_and_title(rev_id, session):
+    response = session.get(action='query',
+                           revids=[rev_id],
+                           formatversion=2)
+    page = response['query']['pages'][0]
+    return (page['pageid'], page['title'])
+
 def rev_id_to_page_id(rev_id, session):
-    return session.get(action='query',
-                       revids=[rev_id],
-                       formatversion=2)['query']['pages'][0]['pageid']
+    return rev_id_to_page_id_and_title(rev_id, session)[0]
+
+def rev_id_to_title(rev_id, session):
+    return rev_id_to_page_id_and_title(rev_id, session)[1]
 
 
 @cachetools.cached(cache=rev_id_to_user_fake_id_cache,
@@ -70,7 +78,7 @@ def rev_id_to_user_fake_id(rev_id, session):
 def unpatrolled_changes(session):
     for result in session.get(action='query',
                               list='recentchanges',
-                              rcprop=['ids', 'user'],
+                              rcprop=['ids', 'title', 'user'],
                               rcshow='unpatrolled',
                               rctype=['edit'], # TODO consider including 'new' as well
                               rcnamespace=[
@@ -81,8 +89,8 @@ def unpatrolled_changes(session):
                               rclimit='max',
                               continuation=True):
         for change in result['query']['recentchanges']:
-            with rev_id_to_page_id_cache_lock:
-                rev_id_to_page_id_cache[change['revid']] = change['pageid']
+            with rev_id_to_page_id_and_title_cache_lock:
+                rev_id_to_page_id_and_title_cache[change['revid']] = (change['pageid'], change['title'])
             with rev_id_to_user_fake_id_cache_lock:
                 rev_id_to_user_fake_id_cache[change['revid']] = user_fake_id(change['user'])
             yield change['revid']
