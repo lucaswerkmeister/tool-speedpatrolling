@@ -202,6 +202,8 @@ def any_diff():
                 continue
             if ids.rev_id_to_user_fake_id(rev_id, any_session()) in ignored_user_fake_ids:
                 continue
+            if ids.rev_id_to_show_patrol_footer(rev_id, authenticated_session()):
+                continue
             if supported_scripts is not None:
                 diff_body = any_session().get(action='compare',
                                               fromrev=rev_id,

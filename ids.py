@@ -15,6 +15,8 @@ rev_id_to_page_id_and_title_cache = MyLRUCache(maxsize=1024*1024)
 rev_id_to_page_id_and_title_cache_lock = threading.RLock()
 rev_id_to_user_fake_id_cache = MyLRUCache(maxsize=1024*1024)
 rev_id_to_user_fake_id_cache_lock = threading.RLock()
+title_to_show_patrol_footer_cache = cachetools.TTLCache(maxsize=1024*1024, ttl=5*60) # time-to-live is in seconds
+title_to_show_patrol_footer_cache_lock = threading.RLock()
 
 
 def id_limit(name):
@@ -94,3 +96,22 @@ def unpatrolled_changes(session):
             with rev_id_to_user_fake_id_cache_lock:
                 rev_id_to_user_fake_id_cache[change['revid']] = user_fake_id(change['user'])
             yield change['revid']
+
+
+@cachetools.cached(cache=title_to_show_patrol_footer_cache,
+                   key=lambda title, session: title,
+                   lock=title_to_show_patrol_footer_cache_lock)
+def title_to_show_patrol_footer(title, session):
+    # roughly equivalent to Article::showPatrolFooter() –
+    # if that returns true, iframe embedding is disabled to prevent clickjacking,
+    # so we don’t want to show such pages to the user
+    return bool(session.get(action='query',
+                            list='recentchanges',
+                            rctitle=title,
+                            rctype=['new'],
+                            rclimit=1,
+                            rcshow=['!patrolled'],
+                            rcprop=[])['query']['recentchanges'])
+
+def rev_id_to_show_patrol_footer(rev_id, session):
+    return title_to_show_patrol_footer(rev_id_to_title(rev_id, session), session)
