@@ -225,7 +225,7 @@ def any_diff():
                                       contentmodel='wikitext',
                                       formatversion=2)['parse']['text']
         return flask.render_template('permission-error.html',
-                                     info=flask.Markup(info_html))
+                                     info=fix_markup(info_html))
 
 @app.route('/diff/<int:rev_id>/')
 def diff(rev_id):
@@ -318,7 +318,7 @@ def diff_rollback(rev_id):
         return flask.render_template('rollback-error.html',
                                      rev_id=rev_id,
                                      user=user,
-                                     info=flask.Markup(info_html))
+                                     info=fix_markup(info_html))
     else:
         return flask.redirect(flask.url_for('any_diff'))
 
