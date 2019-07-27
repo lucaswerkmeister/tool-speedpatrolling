@@ -116,6 +116,9 @@ def authentication_area():
     identity = identify()
     return (flask.Markup(r'<span class="navbar-text"><span class="d-none d-sm-inline">Logged in as </span>') +
             user_link(identity['username']) +
+            flask.Markup(r', <a id="logout" class="navbar-text" href="') +
+            flask.Markup.escape(flask.url_for('logout')) +
+            flask.Markup(r'">Log out</a>') +
             flask.Markup(r'</span>'))
 
 @memoize
