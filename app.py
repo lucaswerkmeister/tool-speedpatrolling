@@ -351,10 +351,14 @@ def fix_markup(html):
     return flask.Markup(str(soup))
 
 def user_scripts_from_babel():
-    session = any_session()
+    session = authenticated_session()
+    if not session:
+        return ['Latin']
+    user_name = session.get(action='query',
+                            meta='userinfo')['query']['userinfo']['name']
     languages = session.get(action='query',
                             meta='babel',
-                            babuser=identify()['username'])['query']['babel'].keys()
+                            babuser=user_name)['query']['babel'].keys()
     autonyms = language_autonyms(languages)
     return scripts.scripts_of_text(char for autonym in autonyms.values() for char in autonym)
 

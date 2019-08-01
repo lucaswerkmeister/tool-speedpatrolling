@@ -60,3 +60,9 @@ def test_is_ip_address(val, expected):
 def test_fix_markup(input, expected):
     actual = speedpatrolling.fix_markup(input)
     assert expected == actual
+
+
+def test_settings_anonymous():
+    with speedpatrolling.app.test_request_context():
+        rv = speedpatrolling.settings()
+    # did not throw
