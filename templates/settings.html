@@ -3,7 +3,12 @@
 <form method="post">
   <input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
   <div class="form-group">
-    <label for="scripts">Which of the following scripts can you read?</label>
+    <label for="scripts">
+      Which of the following scripts can you read?
+      <small class="text-muted">
+        Diffs in other scripts will be skipped automatically.
+      </small>
+    </label>
     <select multiple id="scripts" name="script" class="form-control" size="20">
       {% for script, selected in scripts | dictsort %}
       <option {% if selected %} selected {% endif %}>{{ script }}</option>
