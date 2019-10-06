@@ -6,11 +6,31 @@
     This tool helps Wikidata editors to patrol recent changes.
   </p>
   {% if user_logged_in() %}
-  <a class="btn btn-primary btn-large" href="{{ url_for('any_diff') }}">Start</a>
+    {% if user_can_patrol() %}
+      {% if not user_can_rollback() %}
+        <div class="alert alert-warning">
+          You don’t have the “rollback” user right,
+          so while you can mark unproblematic changes as patrolled,
+          in this tool you can’t do anything about problematic ones.
+          See <a href="https://www.wikidata.org/wiki/Special:MyLanguage/Wikidata:Rollbackers">Wikidata:Rollbackers</a>
+          for more information,
+          including how to request this right.
+        </div>
+      {% endif %}
+      <p>
+        <a class="btn btn-primary btn-large" href="{{ url_for('any_diff') }}">Start</a>
+      </p>
+    {% else %}
+      <div class="alert alert-warning">
+        You don’t have the “patrol” user right,
+        so you can’t use this tool yet.
+        Please wait until you’re <a href="https://www.wikidata.org/wiki/Special:MyLanguage/Wikidata:Autoconfirmed_users">autoconfirmed</a>.
+      </div>
+    {% endif %}
   {% else %}
-  <p>
-    <a class="btn btn-primary btn-large" href="{{ url_for('login') }}">Log in</a> to get started
-  </p>
+    <p>
+      <a class="btn btn-primary btn-large" href="{{ url_for('login') }}">Log in</a> to get started
+    </p>
   {% endif %}
   <a class="btn btn-secondary btn-large" href="{{ url_for('settings') }}">Settings</a>
 </div>
