@@ -176,14 +176,17 @@ def settings():
         flask.session['supported_scripts'] = [script for script in flask.request.form.getlist('script') if script in scripts]
         return flask.redirect(flask.url_for('index'), code=303)
     supported_scripts = flask.session.get('supported_scripts', None)
+    scripts_guessed_from_babel = False
     if supported_scripts is None:
         supported_scripts = user_scripts_from_babel()
+        scripts_guessed_from_babel = True
         if 'Latin' not in supported_scripts:
             # if they use this tool, they can read Latin, even if it’s not in their Babel
             supported_scripts.append('Latin')
     for script in supported_scripts:
         scripts[script] = True
     return flask.render_template('settings.html',
+                                 scripts_guessed_from_babel=scripts_guessed_from_babel,
                                  scripts=scripts)
 
 @app.route('/diff/')

@@ -14,6 +14,12 @@
       <option {% if selected %} selected {% endif %}>{{ script }}</option>
       {% endfor %}
     </select>
+    {% if scripts_guessed_from_babel %}
+    <small class="form-text text-muted">
+      The above initial selection of scripts has been guessed from the languages in your Babel.
+      Until you save the settings, edits will not be filtered by script.
+    </small>
+    {% endif %}
   </div>
   <button type="submit" class="btn btn-primary">Save</button>
 </form>
