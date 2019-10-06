@@ -40,10 +40,10 @@
       <button class="btn btn-block btn-primary" formaction="skip" accesskey="s">Skip</button>
     </div>
     <div class="col">
-      <button class="btn btn-block btn-success" formaction="patrol" accesskey="p" {% if not user_can_patrol() %} disabled {% endif %}>Patrol</button>
+      <button class="btn btn-block btn-success" formaction="patrol" accesskey="p" {% if not user_can_patrol() %} disabled title="You don’t have the “patrol” user right." {% endif %}>Patrol</button>
     </div>
     <div class="col">
-      <button class="btn btn-block btn-danger" formaction="rollback" accesskey="r" {% if not user_can_rollback() %} disabled {% endif %}>Rollback</button>
+      <button class="btn btn-block btn-danger" formaction="rollback" accesskey="r" {% if not user_can_rollback() %} disabled title="You don’t have the “rollback” user right." {% endif %}>Rollback</button>
     </div>
   </div>
 </form>
