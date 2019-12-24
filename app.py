@@ -250,7 +250,7 @@ def diff(rev_id):
 @app.route('/diff/<int:rev_id>/skip', methods=['POST'])
 def diff_skip(rev_id):
     if not submitted_request_valid():
-        return 'CSRF error', 400
+        return flask.redirect(flask.url_for('any_diff'))
 
     ids.append(flask.session, 'skipped_rev_ids', rev_id)
 
