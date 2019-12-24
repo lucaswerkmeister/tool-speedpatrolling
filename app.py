@@ -241,6 +241,7 @@ def diff(rev_id):
     return flask.render_template('diff.html',
                                  rev_id=rev_id,
                                  title=results['totitle'],
+                                 had_csrf_error=getattr(flask.g, 'had_csrf_error', False),
                                  old_user=results['fromuser'],
                                  new_user=results['touser'],
                                  old_comment=fix_markup(results['fromparsedcomment']),
@@ -274,7 +275,8 @@ def diff_skip(rev_id):
 @app.route('/diff/<int:rev_id>/patrol', methods=['POST'])
 def diff_patrol(rev_id):
     if not submitted_request_valid():
-        return 'CSRF error', 400
+        flask.g.had_csrf_error = True
+        return diff(rev_id)
     session = authenticated_session()
     ids.append(flask.session, 'acted_page_ids', ids.rev_id_to_page_id(rev_id, session))
     ids.append(flask.session, 'acted_user_fake_ids', ids.rev_id_to_user_fake_id(rev_id, session))
@@ -289,7 +291,8 @@ def diff_patrol(rev_id):
 @app.route('/diff/<int:rev_id>/rollback', methods=['POST'])
 def diff_rollback(rev_id):
     if not submitted_request_valid():
-        return 'CSRF error', 400
+        flask.g.had_csrf_error = True
+        return diff(rev_id)
     session = authenticated_session()
     ids.append(flask.session, 'acted_page_ids', ids.rev_id_to_page_id(rev_id, session))
     ids.append(flask.session, 'acted_user_fake_ids', ids.rev_id_to_user_fake_id(rev_id, session))
