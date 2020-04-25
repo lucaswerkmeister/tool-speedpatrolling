@@ -1,6 +1,6 @@
 # SpeedPatrolling
 
-[This tool](https://tools.wmflabs.org/speedpatrolling/) helps Wikidata editors to patrol recent changes.
+[This tool](https://speedpatrolling.toolforge.org/) helps Wikidata editors to patrol recent changes.
 
 For more information,
 please see the tool’s [on-wiki documentation page](https://www.wikidata.org/wiki/User:Lucas_Werkmeister/SpeedPatrolling).
