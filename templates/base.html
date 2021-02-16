@@ -9,6 +9,7 @@
     {% endblock head %}
   </head>
   <body>
+    <a href="#main" class="sr-only sr-only-focusable">Skip to main content</a>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
       <a href="{{ url_for('index') }}" class="navbar-brand">SpeedPatrolling</a>
       <div class="collapse navbar-collapse">
@@ -20,7 +21,7 @@
       </div>
       {{ authentication_area() }}
     </nav>
-    <main class="container mt-3">
+    <main id="main" class="container mt-3">
       {% block main %}
       {% endblock main %}
     </main>
