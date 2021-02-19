@@ -108,14 +108,15 @@ def authentication_area():
     if 'oauth' not in app.config:
         return flask.Markup()
 
-    if not user_logged_in():
+    session = authenticated_session()
+    if session is None:
         return (flask.Markup(r'<a id="login" class="navbar-text" href="') +
                 flask.Markup.escape(flask.url_for('login')) +
                 flask.Markup(r'">Log in</a>'))
 
-    identity = identify()
+    userinfo = get_userinfo()
     return (flask.Markup(r'<span class="navbar-text"><span class="d-none d-sm-inline">Logged in as </span>') +
-            user_link(identity['username']) +
+            user_link(userinfo['name']) +
             flask.Markup(r'</span>'))
 
 @memoize
@@ -133,24 +134,20 @@ def any_session():
     return authenticated_session() or mwapi.Session(host='https://www.wikidata.org', user_agent=user_agent)
 
 @memoize
-def identify():
-    if 'oauth_access_token' in flask.session:
-        access_token = mwoauth.AccessToken(**flask.session['oauth_access_token'])
-        return mwoauth.identify('https://www.wikidata.org/w/index.php',
-                                consumer_token,
-                                access_token)
-    else:
-        return None
-
-
-@memoize
-def user_rights():
+def get_userinfo():
     session = authenticated_session()
     if session is None:
-        return []
+        return None
     return session.get(action='query',
                        meta='userinfo',
-                       uiprop='rights')['query']['userinfo']['rights']
+                       uiprop=['rights'])['query']['userinfo']
+
+
+def user_rights():
+    userinfo = get_userinfo()
+    if userinfo is None:
+        return []
+    return userinfo['rights']
 
 @app.template_global()
 def user_can_patrol():
