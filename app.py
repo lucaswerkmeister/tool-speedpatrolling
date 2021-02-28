@@ -333,7 +333,12 @@ def login():
 
 @app.route('/oauth/callback')
 def oauth_callback():
-    request_token = mwoauth.RequestToken(**flask.session.pop('oauth_request_token'))
+    oauth_request_token = flask.session.pop('oauth_request_token', None)
+    if oauth_request_token is None:
+        return flask.render_template('oauth-callback-error.html',
+                                     already_logged_in='oauth_access_token' in flask.session,
+                                     query_string=flask.request.query_string.decode(flask.request.url_charset))
+    request_token = mwoauth.RequestToken(**oauth_request_token)
     access_token = mwoauth.complete('https://www.wikidata.org/w/index.php', consumer_token, request_token, flask.request.query_string, user_agent=user_agent)
     flask.session['oauth_access_token'] = dict(zip(access_token._fields, access_token))
     flask.session.pop('csrf_token', None)
