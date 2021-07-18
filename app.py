@@ -10,6 +10,7 @@ import os
 import random
 import requests
 import requests_oauthlib
+import stat
 import string
 import toolforge
 import yaml
@@ -26,16 +27,32 @@ app.before_request(toolforge.redirect_to_https)
 toolforge.set_user_agent('speedpatrolling', email='mail@lucaswerkmeister.de')
 user_agent = requests.utils.default_user_agent()
 
-__dir__ = os.path.dirname(__file__)
-try:
-    with open(os.path.join(__dir__, 'config.yaml')) as config_file:
-        app.config.update(yaml.safe_load(config_file))
-except FileNotFoundError:
+@decorator.decorator
+def read_private(func, *args, **kwargs):
+    try:
+        f = args[0]
+        fd = f.fileno()
+    except AttributeError:
+        pass
+    except IndexError:
+        pass
+    else:
+        mode = os.stat(fd).st_mode
+        if (stat.S_IRGRP | stat.S_IROTH) & mode:
+            name = getattr(f, "name", "config file")
+            raise ValueError(f'{name} is readable to others, '
+                             'must be exclusively user-readable!')
+    return func(*args, **kwargs)
+
+has_config = app.config.from_file('config.yaml',
+                                  load=read_private(yaml.safe_load),
+                                  silent=True)
+if not has_config:
     print('config.yaml file not found, assuming local development setup')
     app.secret_key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(64))
 
-if 'oauth' in app.config:
-    consumer_token = mwoauth.ConsumerToken(app.config['oauth']['consumer_key'], app.config['oauth']['consumer_secret'])
+if 'OAUTH' in app.config:
+    consumer_token = mwoauth.ConsumerToken(app.config['OAUTH']['consumer_key'], app.config['OAUTH']['consumer_secret'])
 
 
 def log(type, message):
@@ -105,7 +122,7 @@ def user_logged_in():
 
 @app.template_global()
 def authentication_area():
-    if 'oauth' not in app.config:
+    if 'OAUTH' not in app.config:
         return flask.Markup()
 
     userinfo = get_userinfo()
