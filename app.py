@@ -22,8 +22,6 @@ import unicodescripts
 
 app = flask.Flask(__name__)
 
-app.before_request(toolforge.redirect_to_https)
-
 toolforge.set_user_agent('speedpatrolling', email='mail@lucaswerkmeister.de')
 user_agent = requests.utils.default_user_agent()
 
