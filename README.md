@@ -56,7 +56,7 @@ without OAuth credentials, the tool cannot even load a list of unpatrolled chang
 
 To send a patch, you can submit a
 [pull request on GitHub](https://github.com/lucaswerkmeister/tool-speedpatrolling) or a
-[merge request on GitLab](https://gitlab.wikimedia.org/toolforge-repos/speedpatrolling/-/merge_requests).
+[merge request on GitLab](https://gitlab.wikimedia.org/toolforge-repos/speedpatrolling).
 (E-mail / patch-based workflows are also acceptable.)
 
 ## License
