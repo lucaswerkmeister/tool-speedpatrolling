@@ -1,4 +1,4 @@
-import mwoauth
+import mwoauth  # type: ignore
 import pytest
 import random
 import string

@@ -5,7 +5,7 @@ import urllib.request
 
 print("""#!/usr/bin/python3
 
-import intervaltree
+import intervaltree  # type: ignore
 
 
 _tree = intervaltree.IntervalTree()
@@ -39,7 +39,7 @@ with urllib.request.urlopen('https://www.unicode.org/Public/UNIDATA/Scripts.txt'
             prior_begin, prior_end, prior_script = begin, end, script
 
 # print the final range
-if prior_script:
+if prior_begin and prior_end and prior_script:
     print("_tree[%d:%d] = %s" % (prior_begin, prior_end, repr(prior_script)))
 
 print('''

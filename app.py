@@ -4,12 +4,12 @@ import bs4
 import decorator
 import flask
 import ipaddress
-import mwapi
-import mwoauth
+import mwapi  # type: ignore
+import mwoauth  # type: ignore
 import os
 import random
 import requests
-import requests_oauthlib
+import requests_oauthlib  # type: ignore
 import stat
 import string
 import toolforge

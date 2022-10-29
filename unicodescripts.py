@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import intervaltree
+import intervaltree  # type: ignore
 
 
 _tree = intervaltree.IntervalTree()
