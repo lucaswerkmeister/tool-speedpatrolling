@@ -10,9 +10,9 @@ import scripts
     ('The resistance must not exceed 10 kΩ.', ['Latin', 'Greek']),
     ('αβγАБВГ', ['Cyrillic', 'Greek']),
     ('汉字', ['Han']),
-    ('𐐔𐐯𐑅𐐨𐑉𐐯𐐻', ['Deseret']), # Supplementary Multilingual Plane
-    ([char for text in ['abc', 'ᚁᚂᚃᚄ'] for char in text], ['Ogham', 'Latin']), # list
-    ((char for text in ['ᚠᚡ', '𓀀'] for char in text), ['Runic', 'Egyptian_Hieroglyphs']), # generator
+    ('𐐔𐐯𐑅𐐨𐑉𐐯𐐻', ['Deseret']),  # Supplementary Multilingual Plane
+    ([char for text in ['abc', 'ᚁᚂᚃᚄ'] for char in text], ['Ogham', 'Latin']),  # list
+    ((char for text in ['ᚠᚡ', '𓀀'] for char in text), ['Runic', 'Egyptian_Hieroglyphs']),  # generator
 ])
 def test_scripts_of_text(text, expected_scripts):
     actual_scripts = scripts.scripts_of_text(text)
