@@ -3,6 +3,7 @@
 import bs4
 import decorator
 import flask
+from flask.typing import ResponseReturnValue as RRV
 import ipaddress
 import mwapi  # type: ignore
 import mwoauth  # type: ignore
@@ -13,6 +14,7 @@ import requests_oauthlib  # type: ignore
 import stat
 import string
 import toolforge
+from typing import Optional, cast
 import yaml
 
 import ids
@@ -55,7 +57,7 @@ if 'OAUTH' in app.config:
     consumer_token = mwoauth.ConsumerToken(app.config['OAUTH']['consumer_key'], app.config['OAUTH']['consumer_secret'])
 
 
-def log(type, message):
+def log(type: str, message: str) -> None:
     if app.config.get('DEBUG_' + type, False):
         print('[%s] %s' % (type, message))
 
@@ -71,13 +73,13 @@ def memoize(func, *args, **kwargs):
 
 
 @app.template_global()
-def csrf_token():
+def csrf_token() -> str:
     if 'csrf_token' not in flask.session:
         flask.session['csrf_token'] = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(64))
     return flask.session['csrf_token']
 
 
-def is_ip_address(val):
+def is_ip_address(val: str) -> bool:
     try:
         ipaddress.ip_address(val)
         return True
@@ -86,7 +88,7 @@ def is_ip_address(val):
 
 
 @app.template_filter()
-def user_link(user_name):
+def user_link(user_name: str) -> flask.Markup:
     if is_ip_address(user_name):
         user_link_prefix = 'https://www.wikidata.org/wiki/Special:Contributions/'
     else:
@@ -102,12 +104,12 @@ def user_link(user_name):
 
 
 @app.template_global()
-def user_logged_in():
+def user_logged_in() -> bool:
     return 'oauth_access_token' in flask.session
 
 
 @app.template_global()
-def authentication_area():
+def authentication_area() -> flask.Markup:
     if 'OAUTH' not in app.config:
         return flask.Markup()
 
@@ -123,7 +125,7 @@ def authentication_area():
 
 
 @memoize
-def authenticated_session():
+def authenticated_session() -> Optional[mwapi.Session]:
     if 'oauth_access_token' in flask.session:
         access_token = mwoauth.AccessToken(**flask.session['oauth_access_token'])
         auth = requests_oauthlib.OAuth1(client_key=consumer_token.key, client_secret=consumer_token.secret,
@@ -134,12 +136,12 @@ def authenticated_session():
 
 
 @memoize
-def any_session():
+def any_session() -> mwapi.Session:
     return authenticated_session() or mwapi.Session(host='https://www.wikidata.org', user_agent=user_agent)
 
 
 @memoize
-def get_userinfo():
+def get_userinfo() -> Optional[dict]:
     session = authenticated_session()
     if session is None:
         return None
@@ -148,7 +150,7 @@ def get_userinfo():
                        uiprop=['rights'])['query']['userinfo']
 
 
-def user_rights():
+def user_rights() -> list[str]:
     userinfo = get_userinfo()
     if userinfo is None:
         return []
@@ -156,22 +158,22 @@ def user_rights():
 
 
 @app.template_global()
-def user_can_patrol():
+def user_can_patrol() -> bool:
     return 'patrol' in user_rights()
 
 
 @app.template_global()
-def user_can_rollback():
+def user_can_rollback() -> bool:
     return 'rollback' in user_rights()
 
 
 @app.route('/')
-def index():
+def index() -> RRV:
     return flask.render_template('index.html')
 
 
 @app.route('/settings/', methods=['GET', 'POST'])
-def settings():
+def settings() -> RRV:
     scripts = dict.fromkeys(unicodescripts.all_scripts(), False)
     del scripts['Common']
     del scripts['Inherited']
@@ -196,7 +198,7 @@ def settings():
 
 
 @app.route('/diff/')
-def any_diff():
+def any_diff() -> RRV:
     if not user_logged_in():
         return flask.redirect(flask.url_for('login'))
     skipped_rev_ids = ids.get(flask.session, 'skipped_rev_ids')
@@ -239,7 +241,7 @@ def any_diff():
 
 
 @app.route('/diff/<int:rev_id>/')
-def diff(rev_id):
+def diff(rev_id: int) -> RRV:
     session = any_session()
     results = session.get(action='compare',
                           fromrev=rev_id,
@@ -258,7 +260,7 @@ def diff(rev_id):
 
 
 @app.route('/diff/<int:rev_id>/skip', methods=['POST'])
-def diff_skip(rev_id):
+def diff_skip(rev_id: int) -> RRV:
     if not submitted_request_valid():
         return flask.redirect(flask.url_for('any_diff'))
 
@@ -283,7 +285,7 @@ def diff_skip(rev_id):
 
 
 @app.route('/diff/<int:rev_id>/patrol', methods=['POST'])
-def diff_patrol(rev_id):
+def diff_patrol(rev_id: int) -> RRV:
     if not submitted_request_valid():
         flask.g.had_csrf_error = True
         return diff(rev_id)
@@ -300,7 +302,7 @@ def diff_patrol(rev_id):
 
 
 @app.route('/diff/<int:rev_id>/rollback', methods=['POST'])
-def diff_rollback(rev_id):
+def diff_rollback(rev_id: int) -> RRV:
     if not submitted_request_valid():
         flask.g.had_csrf_error = True
         return diff(rev_id)
@@ -341,7 +343,7 @@ def diff_rollback(rev_id):
 
 
 @app.route('/login')
-def login():
+def login() -> RRV:
     redirect, request_token = mwoauth.initiate('https://www.wikidata.org/w/index.php', consumer_token, user_agent=user_agent)
     flask.session['oauth_request_token'] = dict(zip(request_token._fields, request_token))
     flask.session.permanent = True
@@ -349,7 +351,7 @@ def login():
 
 
 @app.route('/oauth/callback')
-def oauth_callback():
+def oauth_callback() -> RRV:
     oauth_request_token = flask.session.pop('oauth_request_token', None)
     if oauth_request_token is None:
         return flask.render_template('oauth-callback-error.html',
@@ -363,21 +365,21 @@ def oauth_callback():
 
 
 @app.route('/logout')
-def logout():
+def logout() -> RRV:
     flask.session.clear()
     return flask.redirect(flask.url_for('index'))
 
 
-def fix_markup(html):
+def fix_markup(html: str) -> flask.Markup:
     soup = bs4.BeautifulSoup(html, 'html.parser')
     for link in soup.select('a[href]'):
-        href = link['href']
+        href = cast(str, link['href'])
         if href.startswith('/') and not href.startswith('//'):
             link['href'] = 'https://www.wikidata.org' + href
     return flask.Markup(str(soup))
 
 
-def user_scripts_from_babel():
+def user_scripts_from_babel() -> list[str]:
     session = authenticated_session()
     if not session:
         return ['Latin']
@@ -390,7 +392,7 @@ def user_scripts_from_babel():
     return scripts.scripts_of_text(char for autonym in autonyms.values() for char in autonym)
 
 
-def language_autonyms(language_codes):
+def language_autonyms(language_codes: list[str]) -> dict[str, str]:
     wikitext = ''
     for language_code in language_codes:
         wikitext += '<span><dt>' + language_code + '</dt><dd>{{#language:' + language_code + '|' + language_code + '}}</dd></span>'
@@ -410,12 +412,12 @@ def language_autonyms(language_codes):
     return autonyms
 
 
-def full_url(endpoint, **kwargs):
+def full_url(endpoint: str, **kwargs) -> str:
     scheme = flask.request.headers.get('X-Forwarded-Proto', 'http')
     return flask.url_for(endpoint, _external=True, _scheme=scheme, **kwargs)
 
 
-def submitted_request_valid():
+def submitted_request_valid() -> bool:
     """Check whether a submitted POST request is valid.
 
     If this method returns False, the request might have been issued
@@ -450,7 +452,7 @@ def submitted_request_valid():
 
 
 @app.after_request
-def deny_frame(response):
+def deny_frame(response: flask.Response) -> flask.Response:
     """Disallow embedding the tool’s pages in other websites.
 
     If other websites can embed this tool’s pages, e. g. in <iframe>s,
