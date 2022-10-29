@@ -1,0 +1,12 @@
+beautifulsoup4
+cachetools
+decorator
+flask >= 2.0.0
+intervaltree
+mwapi
+mwoauth
+pytest
+pyyaml
+requests
+requests_oauthlib
+toolforge

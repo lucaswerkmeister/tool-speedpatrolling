@@ -30,7 +30,7 @@ cd ~/www/python/src
 git fetch
 git diff @ @{u} # inspect changes
 git merge --ff-only @{u}
-pip3 install -r requirements.txt
+pip-sync
 webservice restart
 ```
 
