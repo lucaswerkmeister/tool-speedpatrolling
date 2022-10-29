@@ -11,11 +11,11 @@ class MyLRUCache(cachetools.LRUCache):
         # no self.__update(key)
 
 
-rev_id_to_page_id_and_title_cache = MyLRUCache(maxsize=1024*1024)
+rev_id_to_page_id_and_title_cache = MyLRUCache(maxsize=1024 * 1024)
 rev_id_to_page_id_and_title_cache_lock = threading.RLock()
-rev_id_to_user_fake_id_cache = MyLRUCache(maxsize=1024*1024)
+rev_id_to_user_fake_id_cache = MyLRUCache(maxsize=1024 * 1024)
 rev_id_to_user_fake_id_cache_lock = threading.RLock()
-title_to_show_patrol_footer_cache = cachetools.TTLCache(maxsize=1024*1024, ttl=5*60) # time-to-live is in seconds
+title_to_show_patrol_footer_cache = cachetools.TTLCache(maxsize=1024 * 1024, ttl=5 * 60)  # time-to-live is in seconds
 title_to_show_patrol_footer_cache_lock = threading.RLock()
 
 
@@ -59,8 +59,10 @@ def rev_id_to_page_id_and_title(rev_id, session):
     page = response['query']['pages'][0]
     return (page['pageid'], page['title'])
 
+
 def rev_id_to_page_id(rev_id, session):
     return rev_id_to_page_id_and_title(rev_id, session)[0]
+
 
 def rev_id_to_title(rev_id, session):
     return rev_id_to_page_id_and_title(rev_id, session)[1]
@@ -82,11 +84,11 @@ def unpatrolled_changes(session):
                               list='recentchanges',
                               rcprop=['ids', 'title', 'user'],
                               rcshow='unpatrolled',
-                              rctype=['edit'], # TODO consider including 'new' as well
+                              rctype=['edit'],  # TODO consider including 'new' as well
                               rcnamespace=[
-                                  0, # Main (Item)
-                                  120, # Property
-                                  146, # Lexeme
+                                  0,  # Main (Item)
+                                  120,  # Property
+                                  146,  # Lexeme
                               ],
                               rclimit='max',
                               continuation=True):
@@ -112,6 +114,7 @@ def title_to_show_patrol_footer(title, session):
                             rclimit=1,
                             rcshow=['!patrolled'],
                             rcprop=[])['query']['recentchanges'])
+
 
 def rev_id_to_show_patrol_footer(rev_id, session):
     return title_to_show_patrol_footer(rev_id_to_title(rev_id, session), session)

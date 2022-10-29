@@ -25,6 +25,7 @@ app = flask.Flask(__name__)
 toolforge.set_user_agent('speedpatrolling', email='mail@lucaswerkmeister.de')
 user_agent = requests.utils.default_user_agent()
 
+
 @decorator.decorator
 def read_private(func, *args, **kwargs):
     try:
@@ -41,6 +42,7 @@ def read_private(func, *args, **kwargs):
             raise ValueError(f'{name} is readable to others, '
                              'must be exclusively user-readable!')
     return func(*args, **kwargs)
+
 
 has_config = app.config.from_file('config.yaml',
                                   load=read_private(yaml.safe_load),
@@ -74,6 +76,7 @@ def csrf_token():
         flask.session['csrf_token'] = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(64))
     return flask.session['csrf_token']
 
+
 @app.template_global()
 def form_value(name):
     if 'repeat_form' in flask.g and name in flask.request.form:
@@ -82,6 +85,7 @@ def form_value(name):
                 flask.Markup(r'" '))
     else:
         return flask.Markup()
+
 
 @app.template_global()
 def form_attributes(name):
@@ -92,12 +96,14 @@ def form_attributes(name):
             flask.Markup(r'" ') +
             form_value(name))
 
+
 def is_ip_address(val):
     try:
         ipaddress.ip_address(val)
         return True
     except ValueError:
         return False
+
 
 @app.template_filter()
 def user_link(user_name):
@@ -114,9 +120,11 @@ def user_link(user_name):
             flask.Markup(r'</bdi>') +
             flask.Markup(r'</a>'))
 
+
 @app.template_global()
 def user_logged_in():
     return 'oauth_access_token' in flask.session
+
 
 @app.template_global()
 def authentication_area():
@@ -133,6 +141,7 @@ def authentication_area():
             user_link(userinfo['name']) +
             flask.Markup(r'</span>'))
 
+
 @memoize
 def authenticated_session():
     if 'oauth_access_token' in flask.session:
@@ -143,9 +152,11 @@ def authenticated_session():
     else:
         return None
 
+
 @memoize
 def any_session():
     return authenticated_session() or mwapi.Session(host='https://www.wikidata.org', user_agent=user_agent)
+
 
 @memoize
 def get_userinfo():
@@ -163,9 +174,11 @@ def user_rights():
         return []
     return userinfo['rights']
 
+
 @app.template_global()
 def user_can_patrol():
     return 'patrol' in user_rights()
+
 
 @app.template_global()
 def user_can_rollback():
@@ -175,6 +188,7 @@ def user_can_rollback():
 @app.route('/')
 def index():
     return flask.render_template('index.html')
+
 
 @app.route('/settings/', methods=['GET', 'POST'])
 def settings():
@@ -199,6 +213,7 @@ def settings():
     return flask.render_template('settings.html',
                                  scripts_guessed_from_babel=scripts_guessed_from_babel,
                                  scripts=scripts)
+
 
 @app.route('/diff/')
 def any_diff():
@@ -241,6 +256,7 @@ def any_diff():
         return flask.render_template('permission-error.html',
                                      info=fix_markup(info_html))
 
+
 @app.route('/diff/<int:rev_id>/')
 def diff(rev_id):
     session = any_session()
@@ -258,6 +274,7 @@ def diff(rev_id):
                                  old_comment=fix_markup(results['fromparsedcomment']),
                                  new_comment=fix_markup(results['toparsedcomment']),
                                  body=fix_markup(results['body']))
+
 
 @app.route('/diff/<int:rev_id>/skip', methods=['POST'])
 def diff_skip(rev_id):
@@ -283,6 +300,7 @@ def diff_skip(rev_id):
 
     return flask.redirect(flask.url_for('any_diff'))
 
+
 @app.route('/diff/<int:rev_id>/patrol', methods=['POST'])
 def diff_patrol(rev_id):
     if not submitted_request_valid():
@@ -298,6 +316,7 @@ def diff_patrol(rev_id):
                  revid=rev_id,
                  token=token)
     return flask.redirect(flask.url_for('any_diff'))
+
 
 @app.route('/diff/<int:rev_id>/rollback', methods=['POST'])
 def diff_rollback(rev_id):
@@ -339,12 +358,14 @@ def diff_rollback(rev_id):
     else:
         return flask.redirect(flask.url_for('any_diff'))
 
+
 @app.route('/login')
 def login():
     redirect, request_token = mwoauth.initiate('https://www.wikidata.org/w/index.php', consumer_token, user_agent=user_agent)
     flask.session['oauth_request_token'] = dict(zip(request_token._fields, request_token))
     flask.session.permanent = True
     return flask.redirect(redirect)
+
 
 @app.route('/oauth/callback')
 def oauth_callback():
@@ -358,6 +379,7 @@ def oauth_callback():
     flask.session['oauth_access_token'] = dict(zip(access_token._fields, access_token))
     flask.session.pop('csrf_token', None)
     return flask.redirect(flask.url_for('index'))
+
 
 @app.route('/logout')
 def logout():
@@ -373,6 +395,7 @@ def fix_markup(html):
             link['href'] = 'https://www.wikidata.org' + href
     return flask.Markup(str(soup))
 
+
 def user_scripts_from_babel():
     session = authenticated_session()
     if not session:
@@ -384,6 +407,7 @@ def user_scripts_from_babel():
                             babuser=user_name)['query']['babel'].keys()
     autonyms = language_autonyms(languages)
     return scripts.scripts_of_text(char for autonym in autonyms.values() for char in autonym)
+
 
 def language_autonyms(language_codes):
     wikitext = ''
@@ -404,9 +428,11 @@ def language_autonyms(language_codes):
         autonyms[language_code] = autonym
     return autonyms
 
+
 def full_url(endpoint, **kwargs):
-    scheme=flask.request.headers.get('X-Forwarded-Proto', 'http')
+    scheme = flask.request.headers.get('X-Forwarded-Proto', 'http')
     return flask.url_for(endpoint, _external=True, _scheme=scheme, **kwargs)
+
 
 def submitted_request_valid():
     """Check whether a submitted POST request is valid.
@@ -440,6 +466,7 @@ def submitted_request_valid():
         log('CSRF', 'referrer mismatch: should start with %s, got %s' % (full_url('index'), flask.request.referrer))
         return False
     return True
+
 
 @app.after_request
 def deny_frame(response):

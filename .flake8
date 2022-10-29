@@ -1,0 +1,9 @@
+# -*- mode: conf; -*-
+[flake8]
+exclude =
+    venv
+ignore =
+    # line too long
+    E501
+    # line break after binary operator
+    W504
