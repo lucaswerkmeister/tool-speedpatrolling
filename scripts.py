@@ -28,9 +28,9 @@ def primary_script_of_diff(html):
     for i in range(0, len(elements), 2):
         lineno = elements[i].get_text()
         if (lineno.startswith('label / ') or
-            lineno.startswith('description /') or
-            lineno.startswith('aliases /') or
-            lineno.startswith('links /')):
+                lineno.startswith('description /') or
+                lineno.startswith('aliases /') or
+                lineno.startswith('links /')):
             texts += (element.get_text() for element in elements[i+1].select('.diff-addedline, .diff-deletedline'))
         elif lineno.startswith('Property /'):
             texts += (element.get_text() for element in elements[i+1].select('.wb-monolingualtext-value'))

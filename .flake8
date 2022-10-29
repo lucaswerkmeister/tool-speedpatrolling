@@ -3,8 +3,6 @@
 exclude =
     venv
 ignore =
-    # visually indented line with same indent as next logical line
-    E129
     # missing whitespace around operator
     E225
     # missing whitespace around arithmetic operator
