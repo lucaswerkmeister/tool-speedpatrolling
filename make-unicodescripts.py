@@ -6,6 +6,7 @@ import urllib.request
 print("""#!/usr/bin/python3
 
 import intervaltree  # type: ignore
+from typing import Iterable, cast
 
 
 _tree = intervaltree.IntervalTree()
@@ -44,14 +45,14 @@ if prior_begin and prior_end and prior_script:
 
 print('''
 
-def script(chr):
+def script(chr: str) -> str:
     """Return the script of the given character.
 
     If the script for the character is not known,
     'Unknown' is returned."""
     intervals = _tree[ord(chr)]
     if len(intervals) == 1:
-        return intervals.pop().data
+        return cast(str, intervals.pop().data)
     elif not intervals:
         return 'Unknown'
     else:
@@ -59,7 +60,7 @@ def script(chr):
         raise ValueError('more than one script for character ' + chr)
 
 
-def all_scripts():
+def all_scripts() -> Iterable[str]:
     """Return a set of all scripts known to this module.
 
     This does not include the 'Unknown' default script."""
