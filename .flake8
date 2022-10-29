@@ -1,0 +1,24 @@
+# -*- mode: conf; -*-
+[flake8]
+exclude =
+    venv
+ignore =
+    # visually indented line with same indent as next logical line
+    E129
+    # missing whitespace around operator
+    E225
+    # missing whitespace around arithmetic operator
+    E226
+    # at least two spaces before inline comment
+    E261
+    # expected 2 blank lines
+    E302 # between functions and classes
+    E305 # after functions and classes
+    # line too long
+    E501
+    # imported but unused
+    F401
+    # local variable is assigned to but never used
+    F841
+    # line break after binary operator
+    W504
