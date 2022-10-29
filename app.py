@@ -77,26 +77,6 @@ def csrf_token():
     return flask.session['csrf_token']
 
 
-@app.template_global()
-def form_value(name):
-    if 'repeat_form' in flask.g and name in flask.request.form:
-        return (flask.Markup(r' value="') +
-                flask.Markup.escape(flask.request.form[name]) +
-                flask.Markup(r'" '))
-    else:
-        return flask.Markup()
-
-
-@app.template_global()
-def form_attributes(name):
-    return (flask.Markup(r' id="') +
-            flask.Markup.escape(name) +
-            flask.Markup(r'" name="') +
-            flask.Markup.escape(name) +
-            flask.Markup(r'" ') +
-            form_value(name))
-
-
 def is_ip_address(val):
     try:
         ipaddress.ip_address(val)
