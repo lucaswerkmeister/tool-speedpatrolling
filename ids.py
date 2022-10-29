@@ -59,8 +59,10 @@ def rev_id_to_page_id_and_title(rev_id, session):
     page = response['query']['pages'][0]
     return (page['pageid'], page['title'])
 
+
 def rev_id_to_page_id(rev_id, session):
     return rev_id_to_page_id_and_title(rev_id, session)[0]
+
 
 def rev_id_to_title(rev_id, session):
     return rev_id_to_page_id_and_title(rev_id, session)[1]
@@ -112,6 +114,7 @@ def title_to_show_patrol_footer(title, session):
                             rclimit=1,
                             rcshow=['!patrolled'],
                             rcprop=[])['query']['recentchanges'])
+
 
 def rev_id_to_show_patrol_footer(rev_id, session):
     return title_to_show_patrol_footer(rev_id_to_title(rev_id, session), session)
