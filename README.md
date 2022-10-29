@@ -43,7 +43,7 @@ You can also run the tool locally, which is much more convenient for development
 git clone https://gitlab.wikimedia.org/toolforge-repos/speedpatrolling.git
 cd tool-speedpatrolling
 pip3 install -r requirements.txt
-FLASK_APP=app.py FLASK_ENV=development flask run
+flask --debug run
 ```
 
 If you want, you can do this inside some virtualenv too.
