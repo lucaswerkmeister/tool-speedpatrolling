@@ -1,13 +1,14 @@
 import bs4
+from typing import Iterable, Optional
 
 import unicodescripts
 
 
-def scripts_of_text(text):
+def scripts_of_text(text: Iterable[str]) -> list[str]:
     """Determine the scripts used in a snippet of text.
 
     The 'Common', 'Inherited' and 'Unknown' scripts are ignored."""
-    scripts = {}
+    scripts: dict[str, int] = {}
     for char in text:
         script = unicodescripts.script(char)
         if script not in {'Common', 'Inherited', 'Unknown'}:
@@ -16,7 +17,7 @@ def scripts_of_text(text):
     return [script for script, count in common_scripts]
 
 
-def primary_script_of_diff(html):
+def primary_script_of_diff(html: str) -> Optional[str]:
     """Determine the primary script of a Wikidata diff.
 
     Only the scripts of terms, sitelinks, monolingual text values and
@@ -24,7 +25,7 @@ def primary_script_of_diff(html):
     (specifically, the headers) must be in English."""
     soup = bs4.BeautifulSoup(html, 'html.parser')
     elements = [content for content in soup.contents if type(content) is bs4.Tag]
-    texts = []
+    texts: list[str] = []
     for i in range(0, len(elements), 2):
         lineno = elements[i].get_text()
         if (lineno.startswith('label / ') or

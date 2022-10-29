@@ -6,8 +6,14 @@ flask >= 2.0.0
 intervaltree
 mwapi
 mwoauth
+mypy
 pytest
 pyyaml
 requests
 requests_oauthlib
 toolforge
+types-beautifulsoup4
+types-cachetools
+types-decorator
+types-requests
+types-PyYAML
