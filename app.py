@@ -403,9 +403,9 @@ def language_autonyms(language_codes):
                              formatversion=2)['parse']['text']
     soup = bs4.BeautifulSoup(html.strip(), 'html.parser')
     autonyms = {}
-    for span in soup.contents:
-        language_code = span.dt.string
-        autonym = span.dd.string
+    for span in soup.find_all('span'):
+        language_code = span.find('dt').string
+        autonym = span.find('dd').string
         autonyms[language_code] = autonym
     return autonyms
 
