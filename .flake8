@@ -3,8 +3,6 @@
 exclude =
     venv
 ignore =
-    # missing whitespace around operator
-    E225
     # missing whitespace around arithmetic operator
     E226
     # at least two spaces before inline comment
