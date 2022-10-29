@@ -11,11 +11,11 @@ class MyLRUCache(cachetools.LRUCache):
         # no self.__update(key)
 
 
-rev_id_to_page_id_and_title_cache = MyLRUCache(maxsize=1024*1024)
+rev_id_to_page_id_and_title_cache = MyLRUCache(maxsize=1024 * 1024)
 rev_id_to_page_id_and_title_cache_lock = threading.RLock()
-rev_id_to_user_fake_id_cache = MyLRUCache(maxsize=1024*1024)
+rev_id_to_user_fake_id_cache = MyLRUCache(maxsize=1024 * 1024)
 rev_id_to_user_fake_id_cache_lock = threading.RLock()
-title_to_show_patrol_footer_cache = cachetools.TTLCache(maxsize=1024*1024, ttl=5*60) # time-to-live is in seconds
+title_to_show_patrol_footer_cache = cachetools.TTLCache(maxsize=1024 * 1024, ttl=5 * 60) # time-to-live is in seconds
 title_to_show_patrol_footer_cache_lock = threading.RLock()
 
 

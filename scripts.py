@@ -31,10 +31,10 @@ def primary_script_of_diff(html):
                 lineno.startswith('description /') or
                 lineno.startswith('aliases /') or
                 lineno.startswith('links /')):
-            texts += (element.get_text() for element in elements[i+1].select('.diff-addedline, .diff-deletedline'))
+            texts += (element.get_text() for element in elements[i + 1].select('.diff-addedline, .diff-deletedline'))
         elif lineno.startswith('Property /'):
-            texts += (element.get_text() for element in elements[i+1].select('.wb-monolingualtext-value'))
-            texts += (element.get_text() for element in elements[i+1].select('a.extiw[href^="//commons.wikimedia.org/"]'))
+            texts += (element.get_text() for element in elements[i + 1].select('.wb-monolingualtext-value'))
+            texts += (element.get_text() for element in elements[i + 1].select('a.extiw[href^="//commons.wikimedia.org/"]'))
     scripts = scripts_of_text(char for text in texts for char in text)
     if scripts:
         return scripts[0]
