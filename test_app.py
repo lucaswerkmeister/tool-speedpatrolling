@@ -1,4 +1,3 @@
-import flask
 import mwoauth
 import pytest
 import random
