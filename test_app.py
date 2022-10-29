@@ -63,5 +63,5 @@ def test_fix_markup(input, expected):
 
 def test_settings_anonymous():
     with speedpatrolling.app.test_request_context():
-        rv = speedpatrolling.settings()
+        speedpatrolling.settings()
     # did not throw
