@@ -224,6 +224,7 @@ def any_diff():
                 if script is not None and script not in supported_scripts:
                     continue
             return flask.redirect(flask.url_for('diff', rev_id=rev_id))
+        return 'Nothing to do!'
     except mwapi.errors.APIError as error:
         # TODO use errorformat='html' once mwapi supports it (mediawiki-utilities/python-mwapi#34)
         info_html = any_session().get(action='parse',
