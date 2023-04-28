@@ -5,6 +5,7 @@ import decorator
 import flask
 from flask.typing import ResponseReturnValue as RRV
 import ipaddress
+from markupsafe import Markup
 import mwapi  # type: ignore
 import mwoauth  # type: ignore
 import os
@@ -88,19 +89,19 @@ def is_ip_address(val: str) -> bool:
 
 
 @app.template_filter()
-def user_link(user_name: str) -> flask.Markup:
+def user_link(user_name: str) -> Markup:
     if is_ip_address(user_name):
         user_link_prefix = 'https://www.wikidata.org/wiki/Special:Contributions/'
     else:
         user_link_prefix = 'https://www.wikidata.org/wiki/User:'
-    return (flask.Markup(r'<a href="') +
-            flask.Markup(user_link_prefix) +
-            flask.Markup.escape(user_name.replace(' ', '_')) +
-            flask.Markup(r'">') +
-            flask.Markup(r'<bdi>') +
-            flask.Markup.escape(user_name) +
-            flask.Markup(r'</bdi>') +
-            flask.Markup(r'</a>'))
+    return (Markup(r'<a href="') +
+            Markup(user_link_prefix) +
+            Markup.escape(user_name.replace(' ', '_')) +
+            Markup(r'">') +
+            Markup(r'<bdi>') +
+            Markup.escape(user_name) +
+            Markup(r'</bdi>') +
+            Markup(r'</a>'))
 
 
 @app.template_global()
@@ -109,19 +110,19 @@ def user_logged_in() -> bool:
 
 
 @app.template_global()
-def authentication_area() -> flask.Markup:
+def authentication_area() -> Markup:
     if 'OAUTH' not in app.config:
-        return flask.Markup()
+        return Markup()
 
     userinfo = get_userinfo()
     if userinfo is None:
-        return (flask.Markup(r'<a id="login" class="navbar-text" href="') +
-                flask.Markup.escape(flask.url_for('login')) +
-                flask.Markup(r'">Log in</a>'))
+        return (Markup(r'<a id="login" class="navbar-text" href="') +
+                Markup.escape(flask.url_for('login')) +
+                Markup(r'">Log in</a>'))
 
-    return (flask.Markup(r'<span class="navbar-text"><span class="d-none d-sm-inline">Logged in as </span>') +
+    return (Markup(r'<span class="navbar-text"><span class="d-none d-sm-inline">Logged in as </span>') +
             user_link(userinfo['name']) +
-            flask.Markup(r'</span>'))
+            Markup(r'</span>'))
 
 
 @memoize
@@ -370,13 +371,13 @@ def logout() -> RRV:
     return flask.redirect(flask.url_for('index'))
 
 
-def fix_markup(html: str) -> flask.Markup:
+def fix_markup(html: str) -> Markup:
     soup = bs4.BeautifulSoup(html, 'html.parser')
     for link in soup.select('a[href]'):
         href = cast(str, link['href'])
         if href.startswith('/') and not href.startswith('//'):
             link['href'] = 'https://www.wikidata.org' + href
-    return flask.Markup(str(soup))
+    return Markup(str(soup))
 
 
 def user_scripts_from_babel() -> list[str]:

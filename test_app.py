@@ -2,7 +2,6 @@ import mwoauth  # type: ignore
 import pytest
 import random
 import string
-import urllib.request
 
 import app as speedpatrolling
 import unicodescripts
@@ -35,11 +34,9 @@ def test_session_fits_in_cookie():
             session['oauth_access_token'] = dict(zip(access_token._fields, access_token))
             # oauth_request_token not tested
             session['supported_scripts'] = list(unicodescripts.all_scripts())
-
-        request = urllib.request.Request('http://localhost' + speedpatrolling.app.config.get('APPLICATION_ROOT', '/'))
-        client.cookie_jar.add_cookie_header(request)
-        header = request.get_header('Cookie')
-        assert len(header) <= 4093
+        cookie_name = speedpatrolling.app.config['SESSION_COOKIE_NAME']
+        cookie_header = f'{cookie_name}={client.get_cookie(cookie_name).value}'
+        assert len(cookie_header) <= 4093
 
 
 @pytest.mark.parametrize('val, expected', [

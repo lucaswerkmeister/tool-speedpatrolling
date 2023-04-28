@@ -4,6 +4,7 @@ decorator
 flake8
 flask >= 2.0.0
 intervaltree
+MarkupSafe
 mwapi
 mwoauth
 mypy
