@@ -8,15 +8,12 @@ import ipaddress
 from markupsafe import Markup
 import mwapi  # type: ignore
 import mwoauth  # type: ignore
-import os
 import random
 import requests
 import requests_oauthlib  # type: ignore
-import stat
 import string
 import toolforge
 from typing import Optional, cast
-import yaml
 
 import ids
 import scripts
@@ -29,26 +26,8 @@ toolforge.set_user_agent('speedpatrolling', email='mail@lucaswerkmeister.de')
 user_agent = requests.utils.default_user_agent()
 
 
-@decorator.decorator
-def read_private(func, *args, **kwargs):
-    try:
-        f = args[0]
-        fd = f.fileno()
-    except AttributeError:
-        pass
-    except IndexError:
-        pass
-    else:
-        mode = os.stat(fd).st_mode
-        if (stat.S_IRGRP | stat.S_IROTH) & mode:
-            name = getattr(f, "name", "config file")
-            raise ValueError(f'{name} is readable to others, '
-                             'must be exclusively user-readable!')
-    return func(*args, **kwargs)
-
-
 has_config = app.config.from_file('config.yaml',
-                                  load=read_private(yaml.safe_load),
+                                  load=toolforge.load_private_yaml,
                                   silent=True)
 if not has_config:
     print('config.yaml file not found, assuming local development setup')

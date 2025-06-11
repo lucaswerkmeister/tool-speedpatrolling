@@ -121,8 +121,6 @@ types-decorator==5.2.0.20250324
     # via -r requirements.in
 types-html5lib==1.1.11.20250516
     # via types-beautifulsoup4
-types-pyyaml==6.0.12.20250516
-    # via -r requirements.in
 types-requests==2.32.4.20250611
     # via -r requirements.in
 typing-extensions==4.14.0
