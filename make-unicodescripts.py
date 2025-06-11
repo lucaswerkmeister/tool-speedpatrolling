@@ -35,7 +35,7 @@ with urllib.request.urlopen('https://www.unicode.org/Public/UNIDATA/Scripts.txt'
             prior_end = end
         else:
             # new range, print the prior one (unless this is the first one)
-            if prior_script:
+            if prior_begin is not None and prior_end is not None and prior_script is not None:
                 print("_tree[%d:%d] = %s" % (prior_begin, prior_end, repr(prior_script)))
             prior_begin, prior_end, prior_script = begin, end, script
 
