@@ -351,6 +351,11 @@ def logout() -> RRV:
     return flask.redirect(flask.url_for('index'))
 
 
+@app.route('/healthz')
+def health() -> RRV:
+    return ''
+
+
 def fix_markup(html: str) -> Markup:
     soup = bs4.BeautifulSoup(html, 'html.parser')
     for link in soup.select('a[href]'):
