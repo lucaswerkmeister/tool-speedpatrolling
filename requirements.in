@@ -1,19 +1,12 @@
 beautifulsoup4
 cachetools
 decorator
-flake8
 flask >= 2.0.0
 intervaltree
 MarkupSafe
 mwapi
 mwoauth
-mypy
-pytest
 pyyaml
 requests
 requests_oauthlib
 toolforge >= 6.1
-types-beautifulsoup4
-types-cachetools
-types-decorator
-types-requests

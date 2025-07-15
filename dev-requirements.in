@@ -1,0 +1,8 @@
+-c requirements.txt
+flake8
+mypy
+pytest
+types-beautifulsoup4
+types-cachetools
+types-decorator
+types-requests

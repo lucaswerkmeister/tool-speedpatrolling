@@ -42,7 +42,7 @@ You can also run the tool locally, which is much more convenient for development
 ```
 git clone https://gitlab.wikimedia.org/toolforge-repos/speedpatrolling.git
 cd tool-speedpatrolling
-pip3 install -r requirements.txt
+pip3 install -r requirements.txt -r dev-requirements.txt
 flask --debug run
 ```
 
