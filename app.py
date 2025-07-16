@@ -14,6 +14,7 @@ import requests_oauthlib  # type: ignore
 import string
 import toolforge
 from typing import Optional, cast
+import yaml
 
 import ids
 import scripts
@@ -26,15 +27,15 @@ toolforge.set_user_agent('speedpatrolling', email='mail@lucaswerkmeister.de')
 user_agent = requests.utils.default_user_agent()
 
 
-has_config = app.config.from_file('config.yaml',
-                                  load=toolforge.load_private_yaml,
-                                  silent=True)
-if not has_config:
-    print('config.yaml file not found, assuming local development setup')
-    app.secret_key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(64))
-
+app.config.from_file('config.yaml', load=toolforge.load_private_yaml, silent=True)
+app.config.from_prefixed_env('TOOL', loads=yaml.safe_load)
 if 'OAUTH' in app.config:
     consumer_token = mwoauth.ConsumerToken(app.config['OAUTH']['CONSUMER_KEY'], app.config['OAUTH']['CONSUMER_SECRET'])
+    assert app.secret_key is not None, 'If OAuth is configured, the SECRET_KEY must also be configured (a fixed random string)'
+else:
+    print('No OAuth configuration found, assuming local development setup')
+    if app.secret_key is None:
+        app.secret_key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(64))
 
 
 def log(type: str, message: str) -> None:
