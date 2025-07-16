@@ -34,7 +34,7 @@ if not has_config:
     app.secret_key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(64))
 
 if 'OAUTH' in app.config:
-    consumer_token = mwoauth.ConsumerToken(app.config['OAUTH']['consumer_key'], app.config['OAUTH']['consumer_secret'])
+    consumer_token = mwoauth.ConsumerToken(app.config['OAUTH']['CONSUMER_KEY'], app.config['OAUTH']['CONSUMER_SECRET'])
 
 
 def log(type: str, message: str) -> None:
