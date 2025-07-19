@@ -16,7 +16,7 @@ To build a new version of the image,
 run the following command on Toolforge after becoming the tool account:
 
 ```sh
-toolforge build start --use-latest-versions https://gitlab.wikimedia.org/toolforge-repos/wd-image-positions
+toolforge build start --use-latest-versions https://gitlab.wikimedia.org/toolforge-repos/speedpatrolling
 ```
 
 The image will contain all the dependencies listed in `requirements.txt`,
@@ -68,7 +68,7 @@ To update the tool, build a new version of the image as described above,
 then restart the webservice:
 
 ```sh
-toolforge build start --use-latest-versions https://gitlab.wikimedia.org/toolforge-repos/wd-image-positions
+toolforge build start --use-latest-versions https://gitlab.wikimedia.org/toolforge-repos/speedpatrolling
 webservice restart
 ```
 
