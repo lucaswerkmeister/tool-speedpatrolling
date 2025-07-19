@@ -15,7 +15,9 @@ mypy==1.17.0
 mypy-extensions==1.1.0
     # via mypy
 packaging==25.0
-    # via pytest
+    # via
+    #   -c /home/lucas/git/speedpatrolling/requirements.txt
+    #   pytest
 pathspec==0.12.1
     # via mypy
 pluggy==1.6.0
