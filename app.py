@@ -10,7 +10,7 @@ import mwapi  # type: ignore
 import mwoauth  # type: ignore
 import random
 import requests
-import requests_oauthlib  # type: ignore
+import requests_oauthlib
 import string
 import toolforge
 from typing import Optional, cast
