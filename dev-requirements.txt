@@ -10,7 +10,7 @@ iniconfig==2.1.0
     # via pytest
 mccabe==0.7.0
     # via flake8
-mypy==1.17.0
+mypy==1.17.1
     # via -r dev-requirements.in
 mypy-extensions==1.1.0
     # via mypy
@@ -32,21 +32,21 @@ pytest==8.4.1
     # via -r dev-requirements.in
 types-beautifulsoup4==4.12.0.20250516
     # via -r dev-requirements.in
-types-cachetools==6.0.0.20250525
+types-cachetools==6.1.0.20250717
     # via -r dev-requirements.in
 types-decorator==5.2.0.20250324
     # via -r dev-requirements.in
-types-html5lib==1.1.11.20250708
+types-html5lib==1.1.11.20250809
     # via types-beautifulsoup4
-types-oauthlib==3.3.0.20250708
+types-oauthlib==3.3.0.20250822
     # via types-requests-oauthlib
-types-pyyaml==6.0.12.20250516
+types-pyyaml==6.0.12.20250822
     # via -r dev-requirements.in
-types-requests==2.32.4.20250611
+types-requests==2.32.4.20250809
     # via
     #   -r dev-requirements.in
     #   types-requests-oauthlib
-types-requests-oauthlib==2.0.0.20250516
+types-requests-oauthlib==2.0.0.20250809
     # via -r dev-requirements.in
 typing-extensions==4.14.1
     # via
