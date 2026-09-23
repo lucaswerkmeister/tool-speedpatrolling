@@ -78,7 +78,7 @@ You can also run the tool locally, which is much more convenient for development
 
 ```
 git clone https://gitlab.wikimedia.org/toolforge-repos/speedpatrolling.git
-cd tool-speedpatrolling
+cd speedpatrolling
 pip3 install -r requirements.txt -r dev-requirements.txt
 flask --debug run
 ```
@@ -92,8 +92,8 @@ without OAuth credentials, the tool cannot even load a list of unpatrolled chang
 ## Contributing
 
 To send a patch, you can submit a
-[pull request on GitHub](https://github.com/lucaswerkmeister/tool-speedpatrolling) or a
-[merge request on GitLab](https://gitlab.wikimedia.org/toolforge-repos/speedpatrolling).
+[merge request on GitLab](https://gitlab.wikimedia.org/toolforge-repos/speedpatrolling) or a
+[pull request on GitHub](https://github.com/lucaswerkmeister/tool-speedpatrolling).
 (E-mail / patch-based workflows are also acceptable.)
 
 ## License
