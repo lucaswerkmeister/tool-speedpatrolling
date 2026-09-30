@@ -10,7 +10,7 @@ please see the tool’s [on-wiki documentation page](https://www.wikidata.org/wi
 On Wikimedia Toolforge, this tool runs under the `speedpatrolling` tool name,
 using the [Toolforge Components Service](https://wikitech.wikimedia.org/wiki/Help:Toolforge/Deploy_your_tool) to coordinate
 building a container with the [Toolforge Build Service](https://wikitech.wikimedia.org/wiki/Help:Toolforge/Build_Service)
-and then deploying that for the webservice and background runner.
+and then deploying that for the webservice.
 The components configuration is in the `toolforge.yaml` file.
 
 To start a new deployment,
