@@ -71,13 +71,8 @@ For the available configuration variables, see the `config.yaml.example` file.
 
 ### Update
 
-To update the tool, build a new version of the image as described above,
-then restart the webservice:
-
-```sh
-toolforge build start --use-latest-versions https://gitlab.wikimedia.org/toolforge-repos/speedpatrolling
-webservice restart
-```
+The tool should automatically be updated on every push to the `main` branch.
+To trigger a manual update, run `toolforge components deployment create` as described above.
 
 ## Local development setup
 
